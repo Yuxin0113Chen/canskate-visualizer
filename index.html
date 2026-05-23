@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en" id="root"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Canskate Visualizer · Every move, seen and understood</title>
+<meta name="description" content="An interactive bilingual handbook for CanSkate. Every skill, Stages 1–6, with the official move description in English &amp; Mandarin and a direct link to its Skate Canada demo video.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Canskate Visualizer">
+<meta property="og:description" content="Every CanSkate skill, Stages 1–6, with official descriptions in English &amp; Mandarin and direct video links.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:url" content="">
+<meta name="theme-color" content="#f0f8ff">
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;⛸&lt;/text&gt;&lt;/svg&gt;">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ice-50:#f0f8ff; --ice-100:#e0f0ff; --ice-200:#baddff; --ice-300:#8ec5f5;
+  --accent:#2563eb; --accent-h:#1d4ed8; --accent-l:#eff4ff;
+  --ink:#0e1118;
+  --text:#0e1118; --text2:#454f68; --text3:#717c94;
+  --card:#ffffff; --bg:#f0f8ff; --border:#d8e0ea; --border2:#e7edf4;
+
+  /* Official CanSkate progress-report colours: Balance green, Control orange, Agility blue.
+     Header bars use the report's exact pastel fills with DARK text (as on the report). */
+  --balance:#c6e0b4; --balance-ink:#2f5318; --balance-edge:#a9cd90;
+  --control:#f8cbad; --control-ink:#7a3c10; --control-edge:#efb289;
+  --agility:#b4c7e7; --agility-ink:#243f6e; --agility-edge:#94afd9;
+
+  --r:4px;            /* global corner radius — crisp, near-square */
+  --z-nav:20; --z-stagenav:25; --z-top:30; --z-panel:40;
+  --shadow:0 1px 2px rgba(14,17,24,0.05);
+  --shadow-md:0 8px 28px rgba(14,17,24,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:300;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;}
+:lang(zh-Hans){font-family:'Noto Sans SC','DM Sans',sans-serif;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r);}
+
+/* ---- Header ---- */
+.top{position:sticky;top:0;z-index:var(--z-top);background:rgba(240,248,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding-top:env(safe-area-inset-top);}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;max-width:1120px;margin:0 auto;}
+.logo{font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-0.02em;}
+.logo span{color:var(--accent);}
+.lang-switch{display:flex;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:3px;}
+.lang-btn{font-family:inherit;font-size:12px;font-weight:500;padding:5px 12px;border:none;border-radius:2px;cursor:pointer;background:transparent;color:var(--text3);transition:background .15s ease-out,color .15s ease-out;min-height:30px;-webkit-tap-highlight-color:transparent;}
+.lang-btn.active{background:var(--accent);color:#fff;}
+
+/* ---- Hero ---- */
+.hero{padding:44px 0 22px;}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:13px;}
+h1{font-family:'DM Sans',sans-serif;font-size:clamp(1.8rem,5vw,2.7rem);font-weight:700;line-height:1.12;letter-spacing:-0.025em;margin-bottom:16px;text-wrap:balance;max-width:18ch;}
+h1 em{font-style:normal;color:var(--accent);}
+.hero-lead{font-size:1.02rem;color:var(--text2);max-width:600px;margin:0 0 6px;line-height:1.65;text-wrap:pretty;}
+.hero-sub{font-size:0.85rem;color:var(--text3);max-width:560px;margin:12px 0 0;line-height:1.6;text-wrap:pretty;}
+
+.search-wrap{max-width:520px;margin:22px 0 0;position:relative;}
+.search-box{width:100%;font-family:inherit;font-size:0.95rem;font-weight:400;padding:13px 44px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);color:var(--text);box-shadow:var(--shadow);transition:border-color .15s ease-out;min-height:48px;}
+.search-box::placeholder{color:var(--text3);}
+.search-box:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l);}
+.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text3);pointer-events:none;}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:none;background:transparent;color:var(--text3);font-size:1.05rem;cursor:pointer;border-radius:2px;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.search-clear:hover{background:var(--ice-100);color:var(--text2);}
+.search-clear.show{display:flex;}
+.search-count{font-size:0.8rem;color:var(--text3);margin-top:11px;min-height:1.2em;}
+
+/* ---- Stage chip nav ---- */
+.stage-nav{position:sticky;top:58px;z-index:var(--z-stagenav);background:rgba(240,248,255,0.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:11px 0;margin-bottom:6px;border-bottom:1px solid var(--border);}
+.stage-nav-inner{display:flex;gap:7px;overflow-x:auto;padding:0 20px;max-width:1120px;margin:0 auto;scrollbar-width:none;}
+.stage-nav-inner::-webkit-scrollbar{display:none;}
+.stage-chip{flex:0 0 auto;font-family:inherit;font-size:0.84rem;font-weight:500;padding:7px 15px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;white-space:nowrap;transition:border-color .15s ease-out,background .15s ease-out,color .15s ease-out;min-height:38px;-webkit-tap-highlight-color:transparent;}
+.stage-chip:hover{border-color:var(--ice-300);}
+
+/* ================= STAGE BLOCK ================= */
+.stages{padding:14px 0 8px;display:flex;flex-direction:column;gap:22px;}
+.stage{scroll-margin-top:120px;}
+.stage.hidden{display:none;}
+
+/* Horizontal stage title above the block */
+.stage-title{display:flex;align-items:baseline;gap:8px;margin:0 2px 10px;}
+.stage-title .st-word,
+.stage-title .st-num{font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);line-height:1.2;}
+.stage-title .st-num{font-variant-numeric:tabular-nums;}
+.stage-title .st-count{margin-left:auto;font-size:0.78rem;font-weight:500;color:var(--text3);font-variant-numeric:tabular-nums;letter-spacing:0.02em;}
+
+/* One big rectangle per stage: 3 sections side by side */
+.stage-block{
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  background:var(--card);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.stage-main{min-width:0;}
+.sec-tabs{display:none;}  /* desktop: no tabs, all 3 columns show */
+.stage-body{display:grid;grid-template-columns:repeat(3,1fr);}
+.section{border-right:1px solid var(--border2);min-width:0;}
+.section:last-child{border-right:none;}
+.sec-head{padding:10px 14px;font-size:0.76rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.sec-head.balance{background:var(--balance);color:var(--balance-ink);}
+.sec-head.control{background:var(--control);color:var(--control-ink);}
+.sec-head.agility{background:var(--agility);color:var(--agility-ink);}
+.sec-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto;}
+.sec-dot.balance{background:var(--balance-ink);}
+.sec-dot.control{background:var(--control-ink);}
+.sec-dot.agility{background:var(--agility-ink);}
+
+.skill-list{list-style:none;}
+.skill-row{display:flex;align-items:center;gap:9px;padding:9px 13px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .12s ease-out;-webkit-tap-highlight-color:transparent;width:100%;text-align:left;border-left:none;border-right:none;border-top:none;background:var(--card);font-family:inherit;min-height:46px;}
+.skill-list li:last-child .skill-row{border-bottom:none;}
+.skill-row:hover{background:var(--ice-50);}
+.section[data-col="balance"] .skill-row:hover{background:color-mix(in srgb, var(--balance) 38%, transparent);}
+.section[data-col="control"] .skill-row:hover{background:color-mix(in srgb, var(--control) 38%, transparent);}
+.section[data-col="agility"] .skill-row:hover{background:color-mix(in srgb, var(--agility) 38%, transparent);}
+.section[data-col="balance"] .skill-row:hover .play-dot{background:color-mix(in srgb, var(--balance) 75%, white);}
+.section[data-col="control"] .skill-row:hover .play-dot{background:color-mix(in srgb, var(--control) 75%, white);}
+.section[data-col="agility"] .skill-row:hover .play-dot{background:color-mix(in srgb, var(--agility) 75%, white);}
+.skill-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
+.skill-row.row-hidden{display:none;}
+.play-dot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:2px;background:var(--accent-l);transition:background .12s ease-out;}
+.section[data-col="balance"] .play-dot{background:color-mix(in srgb, var(--balance) 45%, white);}
+.section[data-col="control"] .play-dot{background:color-mix(in srgb, var(--control) 45%, white);}
+.section[data-col="agility"] .play-dot{background:color-mix(in srgb, var(--agility) 45%, white);}
+.section[data-col="balance"] .play-dot svg path{fill:var(--balance-ink);}
+.section[data-col="control"] .play-dot svg path{fill:var(--control-ink);}
+.section[data-col="agility"] .play-dot svg path{fill:var(--agility-ink);}
+.skill-row:hover .play-dot{background:var(--ice-200);}
+.play-dot svg{width:10px;height:10px;}
+.play-dot.no-vid{background:#eef1f6;}
+.skill-text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.skill-en{display:block;font-size:0.86rem;font-weight:500;color:var(--text);line-height:1.3;}
+.skill-en mark,.skill-zh mark{background:#fde68a;color:inherit;padding:0 1px;border-radius:2px;}
+.skill-zh{display:block;font-size:0.76rem;color:var(--text3);line-height:1.4;}
+
+/* Empty section (when search filters everything out of a column) */
+.sec-empty{padding:14px 13px;font-size:0.78rem;color:var(--text3);}
+
+/* No results */
+.no-results{text-align:center;padding:54px 20px;color:var(--text3);display:none;}
+.no-results.show{display:block;}
+.no-results-icon{font-size:2.2rem;margin-bottom:12px;}
+.no-results-action{margin-top:15px;}
+.no-results-action button{font-family:inherit;font-size:0.85rem;font-weight:500;color:#fff;background:var(--accent);border:none;border-radius:var(--r);padding:9px 18px;cursor:pointer;min-height:40px;transition:background .15s ease-out;}
+.no-results-action button:hover{background:var(--accent-h);}
+
+/* ---- Detail panel ---- */
+.panel-backdrop{position:fixed;inset:0;background:rgba(14,17,24,0.5);z-index:var(--z-panel);display:none;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .18s ease-out;}
+@media (min-width:640px){.panel-backdrop{align-items:center;padding:24px;}}
+.panel-backdrop.open{display:flex;opacity:1;}
+.panel{background:var(--card);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow-y:auto;box-shadow:var(--shadow-md);border-radius:var(--r) var(--r) 0 0;transform:translateY(16px);transition:transform .18s ease-out;padding-bottom:env(safe-area-inset-bottom);}
+@media (min-width:640px){.panel{border-radius:var(--r);transform:translateY(8px);}}
+.panel-backdrop.open .panel{transform:translateY(0);}
+.panel-head{position:sticky;top:0;background:var(--card);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 13px;border-bottom:1px solid var(--border);}
+.panel-tag{display:inline-block;font-size:0.66rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:3px 9px;border-radius:2px;margin-bottom:9px;}
+.panel-tag.balance{background:var(--balance);color:var(--balance-ink);}
+.panel-tag.control{background:var(--control);color:var(--control-ink);}
+.panel-tag.agility{background:var(--agility);color:var(--agility-ink);}
+.panel-title{font-family:'DM Sans',sans-serif;font-size:1.28rem;font-weight:700;color:var(--ink);line-height:1.2;letter-spacing:-0.015em;text-wrap:balance;}
+.panel-subtitle{font-size:0.9rem;color:var(--text3);margin-top:3px;}
+.panel-close{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--r);border:none;background:var(--ice-100);color:var(--text2);font-size:1.05rem;cursor:pointer;transition:background .15s ease-out;}
+.panel-close:hover{background:var(--ice-200);}
+.panel-body{padding:17px 20px 22px;}
+.detail-block{margin-bottom:17px;}
+.detail-label{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.detail-text{font-size:0.94rem;color:var(--text2);line-height:1.62;text-wrap:pretty;}
+.detail-req{background:var(--ice-50);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
+.detail-req .detail-text{color:var(--text);}
+.detail-divider{height:1px;background:var(--border);margin:18px 0;}
+.detail-lang-tag{display:inline-block;font-size:0.66rem;font-weight:600;letter-spacing:0.05em;color:var(--accent);background:var(--accent-l);padding:2px 8px;border-radius:2px;margin-bottom:10px;}
+.watch-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--accent);color:#fff;text-decoration:none;font-size:0.95rem;font-weight:600;padding:14px 18px;border-radius:var(--r);transition:background .15s ease-out;min-height:48px;margin-top:6px;}
+.watch-btn:hover{background:var(--accent-h);}
+.watch-btn svg{width:17px;height:17px;flex:0 0 auto;}
+.watch-btn.secondary{background:var(--card);color:var(--accent);border:1.5px solid var(--accent-l);}
+.watch-btn.secondary:hover{background:var(--accent-l);}
+.no-vid-note{font-size:0.82rem;color:var(--text3);line-height:1.55;margin-bottom:10px;text-align:center;text-wrap:pretty;}
+.panel-nav{display:flex;gap:8px;margin-top:14px;}
+.panel-nav button{flex:1 1 0;font-family:inherit;font-size:0.82rem;font-weight:500;color:var(--text2);background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:9px;cursor:pointer;transition:border-color .15s ease-out,color .15s ease-out;min-height:42px;}
+.panel-nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-l);}
+.panel-nav button:disabled{opacity:0.4;cursor:default;}
+
+.info-banner{background:var(--accent-l);border:1px solid rgba(37,99,235,0.15);border-radius:var(--r);padding:14px 18px;margin:22px 0 8px;font-size:0.85rem;color:var(--text2);line-height:1.6;display:flex;gap:10px;align-items:flex-start;}
+.info-banner .ib-icon{flex:0 0 auto;}
+
+footer{padding:36px 20px 56px;color:var(--text3);font-size:0.8rem;line-height:1.6;}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+/* ============ RESPONSIVE ============ */
+/* Mobile + small-tablet: stage sections switch via TABS */
+@media (max-width:760px){
+  /* show the tab bar */
+  .sec-tabs{display:flex;border-bottom:1.5px solid var(--border);}
+  .sec-tab{
+    flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
+    font-family:inherit;font-size:0.75rem;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;
+    padding:12px 4px;border:none;border-bottom:3px solid transparent;background:var(--card);
+    color:var(--text3);cursor:pointer;min-height:48px;-webkit-tap-highlight-color:transparent;
+    transition:color .15s ease-out,background .15s ease-out;
+    overflow:hidden;white-space:nowrap;
+  }
+  .sec-tab .sec-dot{width:8px;height:8px;flex:0 0 auto;}
+  .sec-tab .tab-label{overflow:hidden;text-overflow:ellipsis;}
+  .sec-tab .tab-count{
+    font-size:0.66rem;font-weight:500;color:var(--text3);font-variant-numeric:tabular-nums;
+    background:var(--ice-100);padding:2px 6px;border-radius:999px;letter-spacing:0;
+    flex:0 0 auto;
+  }
+  .sec-tab.active.balance{color:var(--balance-ink);background:var(--balance);border-bottom-color:var(--balance-edge);}
+  .sec-tab.active.control{color:var(--control-ink);background:var(--control);border-bottom-color:var(--control-edge);}
+  .sec-tab.active.agility{color:var(--agility-ink);background:var(--agility);border-bottom-color:var(--agility-edge);}
+  /* Inactive tab: muted text, neutral dot */
+  .sec-tab:not(.active){color:#a3acc0;}
+  .sec-tab:not(.active) .sec-dot{background:#c8cfdb;}
+  .sec-tab:not(.active):hover{color:var(--text2);background:var(--ice-50);}
+  .sec-tab:not(.active):hover .sec-dot{background:#9aa3b5;}
+  .sec-tab.active .tab-count{background:rgba(255,255,255,0.55);color:inherit;}
+  .sec-tab.tab-nomatch:not(.active){opacity:0.38;}
+
+  /* one panel at a time; the colored section header is redundant (the tab shows it) */
+  .stage-body{grid-template-columns:1fr;}
+  .section{border-right:none;}
+  .section[data-mtab-hidden]{display:none;}
+  .section .sec-head{display:none;}
+}
+
+/* Phone (narrow): drop the count badge so the label fits cleanly */
+@media (max-width:440px){
+  .sec-tab .tab-count{display:none;}
+  .sec-tab{font-size:0.78rem;padding:13px 4px;gap:7px;}
+  .stage-nav-inner{padding:0 16px;}
+  .wrap{padding:0 16px;}
+  .top-inner{padding:13px 16px;}
+  h1{font-size:1.55rem;}
+  .hero{padding:28px 0 18px;}
+  .skill-row{padding:11px 14px;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+  html{scroll-behavior:auto;}
+}
+
+/* ============ TWEAKS HOOKS ============ */
+/* Body classes that get toggled by the tweaks panel. */
+body.tw-bg-cream  { --bg:#faf6ef; --ice-50:#fbf7f0; --ice-100:#f3ece0; --ice-200:#e8dcc4; --ice-300:#d7c39e; --border:#e6dbc7; --border2:#efe7d6; --accent-l:#fbeee0; }
+body.tw-bg-white  { --bg:#ffffff; --ice-50:#fafafa; --ice-100:#f4f4f5; --ice-200:#e4e4e7; --ice-300:#d4d4d8; --border:#e5e7eb; --border2:#eef0f3; --accent-l:#eef4ff; }
+body.tw-bg-slate  { --bg:#eef2f7; --ice-50:#eef2f7; --ice-100:#e2e8f0; --ice-200:#cbd5e1; --ice-300:#94a3b8; --border:#cbd5e1; --border2:#dfe5ec; --accent-l:#e6edfa; }
+
+/* Ribbon palette variants */
+body.tw-ribbon-bold {
+  --balance:#86c87a; --balance-ink:#0f3a14; --balance-edge:#5da94f;
+  --control:#f0995a; --control-ink:#4d1f02; --control-edge:#cf7836;
+  --agility:#7393d6; --agility-ink:#13234a; --agility-edge:#506fb0;
+}
+body.tw-ribbon-bold .sec-head{color:#fff;}
+body.tw-ribbon-bold .sec-head.balance{background:var(--balance-edge);}
+body.tw-ribbon-bold .sec-head.control{background:var(--control-edge);}
+body.tw-ribbon-bold .sec-head.agility{background:var(--agility-edge);}
+body.tw-ribbon-bold .panel-tag{color:#fff;}
+body.tw-ribbon-bold .panel-tag.balance{background:var(--balance-edge);}
+body.tw-ribbon-bold .panel-tag.control{background:var(--control-edge);}
+body.tw-ribbon-bold .panel-tag.agility{background:var(--agility-edge);}
+
+body.tw-ribbon-mono .sec-head{background:transparent;color:var(--text2);border-bottom:1px solid var(--border);padding-left:14px;}
+body.tw-ribbon-mono .sec-head .sec-dot{display:none;}
+body.tw-ribbon-mono .sec-tab.active{background:transparent;color:var(--text);border-bottom-color:var(--accent)!important;}
+body.tw-ribbon-mono .panel-tag{background:var(--ice-100)!important;color:var(--text2)!important;}
+
+/* Block styles */
+body.tw-block-flat .stage-block{border:none;box-shadow:none;background:transparent;}
+body.tw-block-flat .section{border-right:1px solid var(--border);}
+body.tw-block-flat .section:last-child{border-right:none;}
+
+body.tw-block-elevated .stage-block{border:none;box-shadow:0 6px 24px rgba(14,17,24,0.08), 0 1px 2px rgba(14,17,24,0.04);}
+
+/* Density */
+body.tw-density-compact .skill-row{padding:6px 12px;min-height:38px;}
+body.tw-density-compact .skill-en{font-size:0.83rem;}
+body.tw-density-compact .skill-zh{font-size:0.72rem;}
+body.tw-density-compact .sec-head{padding:7px 12px;font-size:0.72rem;}
+body.tw-density-compact .stages{gap:14px;}
+body.tw-density-compact .hero{padding:30px 0 16px;}
+
+body.tw-density-comfy .skill-row{padding:13px 16px;min-height:54px;}
+body.tw-density-comfy .skill-en{font-size:0.92rem;}
+body.tw-density-comfy .skill-zh{font-size:0.8rem;}
+body.tw-density-comfy .sec-head{padding:13px 18px;font-size:0.8rem;}
+body.tw-density-comfy .stages{gap:30px;}
+
+/* Hide Mandarin subtitle inline */
+body.tw-no-subtitle .skill-zh{display:none;}
+
+/* Heading-font swaps */
+body.tw-font-fraunces h1,
+body.tw-font-fraunces .panel-title{font-family:'Fraunces','DM Serif Display',serif;letter-spacing:-0.01em;}
+body.tw-font-jakarta h1,
+body.tw-font-jakarta .panel-title{font-family:'Plus Jakarta Sans','DM Sans',sans-serif;}
+body.tw-font-spacegrotesk h1,
+body.tw-font-spacegrotesk .panel-title{font-family:'Space Grotesk','DM Sans',sans-serif;}
+
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="#" class="logo">Canskate <span>Visualizer</span></a>
+    <div class="lang-switch" role="group" aria-label="Language / 语言">
+      <button type="button" class="lang-btn active" id="lang-en" onclick="setLang('en')" aria-pressed="true">EN</button>
+      <button type="button" class="lang-btn" id="lang-zh" onclick="setLang('zh')" aria-pressed="false">中文</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1 id="hero-title"></h1>
+    <p class="hero-lead" id="hero-lead"></p>
+    <p class="hero-sub" id="hero-sub"></p>
+  </section>
+</div>
+
+<nav class="stage-nav" aria-label="Jump to stage">
+  <div class="stage-nav-inner" id="stage-nav"></div>
+</nav>
+
+<main class="wrap"><div class="stages" id="stages"></div></main>
+<div class="wrap"><div class="no-results" id="no-results"><div class="no-results-icon" aria-hidden="true">🔍</div><p id="no-results-text"></p><div class="no-results-action"><button type="button" id="no-results-btn" onclick="clearSearch()"></button></div></div></div>
+
+<div class="wrap">
+  <div class="info-banner">
+    <span class="ib-icon" aria-hidden="true">ℹ️</span>
+    <span id="info-text"></span>
+  </div>
+</div>
+
+<footer class="wrap"><p id="footer-text"></p></footer>
+
+<!-- Detail panel -->
+<div class="panel-backdrop" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title" onclick="if(event.target===this)closePanel()">
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <span class="panel-tag" id="panel-tag"></span>
+        <h2 class="panel-title" id="panel-title"></h2>
+        <p class="panel-subtitle" id="panel-subtitle"></p>
+      </div>
+      <button type="button" class="panel-close" id="panel-close" onclick="closePanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+  </div>
+</div>
+
+<script>
+const SKILLS = {
+  "1": {
+    "label_en": "Stage 1",
+    "label_zh": "第 1 阶段",
+    "balance": [
+      {
+        "en": "Fall down & get up",
+        "zh": "摔倒后站起来",
+        "vid": "KKb2tgzOG3k",
+        "tip": "Learn to fall safely and get back up on your own — the very first ice skill.",
+        "desc_en": "From standing or while skating, bend the knees and fall to the ice under control. Kneel, bring one foot up in front, shift onto it and rise — pushing off the ice or knee with your hands if needed.",
+        "req_en": "Fall with control; rise unassisted.",
+        "desc_zh": "站着或滑行中，屈膝有控制地坐倒。跪姿，一只脚收到身前，重心移过去站起——需要时用手撑冰或撑膝盖。",
+        "req_zh": "有控制地摔倒；自己站起来。"
+      },
+      {
+        "en": "Forward skating",
+        "zh": "向前滑行",
+        "vid": "J-WOksDnsm4",
+        "tip": "Marching then gliding forward; your first real strides.",
+        "desc_en": "Move forward on your own with a repeating push-glide rhythm (left, right, left). Short two-foot glides between pushes are fine here. Push with the side of the blade, not the toe.",
+        "req_en": "Skate forward about 13 m (half the rink width).",
+        "desc_zh": "靠自己向前，用左-右-左的连续'蹬-滑'节奏前进。两次蹬之间夹一点双脚滑行是允许的。要用刀刃侧面蹬，不要用刀齿。",
+        "req_zh": "向前滑约 13 米（半个冰场宽度）。"
+      },
+      {
+        "en": "Forward two-foot glide",
+        "zh": "向前双脚滑行",
+        "vid": "jGU8or25YG8",
+        "tip": "Push off and coast forward on both feet, knees soft.",
+        "desc_en": "From forward skating, coast on both feet in an upright stance, feet about hip-width apart, while still moving forward. Straight line or curve both fine.",
+        "req_en": "Hold the glide for at least 1 second.",
+        "desc_zh": "在向前滑行后，双脚约与髋同宽、身体直立地滑行，同时继续向前。直线或弧线都可以。",
+        "req_zh": "滑行保持至少 1 秒。"
+      },
+      {
+        "en": "Forward two-foot sit glide",
+        "zh": "向前双脚下蹲滑行",
+        "vid": "LCsFMa9D_RE",
+        "tip": "Glide forward while bending into a low sitting position.",
+        "desc_en": "From forward skating, glide on two feet while sinking into a sit — lean the upper body forward and bend the knees to lower your seat to roughly a 135°–90° angle.",
+        "req_en": "Hold the glide for at least 1 second.",
+        "desc_zh": "向前滑行后，双脚滑行同时下蹲——上身前倾、屈膝把臀部降到大约 135°–90° 的角度。",
+        "req_zh": "滑行保持至少 1 秒。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Snow slide steps",
+        "zh": "刮冰侧滑步",
+        "vid": "444CKHvdHB8",
+        "tip": "Scrape little piles of 'snow' sideways — builds the stopping motion.",
+        "desc_en": "Feet shoulder-width apart and sideways to the direction you're going. One foot stays put while the other slides sideways, pressing down to shave snow. Shift your weight onto it, bring the other foot over, and repeat.",
+        "req_en": "At least 4 snow slide steps per foot.",
+        "desc_zh": "双脚与肩同宽、侧对前进方向。一只脚不动，另一只脚向侧面滑出并下压刮出冰末儿。重心移过去，把后脚收过来，重复。",
+        "req_zh": "每只脚至少 4 个连续侧滑步。"
+      },
+      {
+        "en": "Backward skating",
+        "zh": "向后滑行",
+        "vid": "pYwr9n4PWqA",
+        "tip": "Wiggle/march backward; first backward movement.",
+        "desc_en": "Move backward on your own with a repeating push-glide rhythm, using 'C' pushes or a clear weight transfer. Some side-to-side rocking is fine. Keep knees and ankles bent.",
+        "req_en": "Skate backward about 13 m (half the rink width).",
+        "desc_zh": "靠自己向后，用连续'蹬-滑'节奏前进，借助'C'形蹬冰或明显的重心转移。可以有些左右摆动。屈膝屈踝。",
+        "req_zh": "向后滑约 13 米（半个冰场宽度）。"
+      },
+      {
+        "en": "Backward two-foot glide",
+        "zh": "向后双脚滑行",
+        "vid": "Vo4McF3_nUU",
+        "tip": "Coast backward on both feet after a push.",
+        "desc_en": "From backward skating, coast backward on both feet, upright, feet about hip-width apart. Straight line or curve both fine.",
+        "req_en": "Hold the glide for at least 1 second.",
+        "desc_zh": "向后滑行后，双脚约与髋同宽、身体直立地向后滑行。直线或弧线都可以。",
+        "req_zh": "滑行保持至少 1 秒。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Stationary 180° turn",
+        "zh": "原地 180° 转身",
+        "vid": "VVpAIHt7Fmg",
+        "tip": "From a standstill, jump or step a half-turn to face the other way.",
+        "desc_en": "Standing with knees bent and weight even, twist the upper body about 90°, then as you rise (unweight) snap the lower body around 180° to follow. Think 'down/up/down'.",
+        "req_en": "One turn in either direction.",
+        "desc_zh": "屈膝、重心均匀站立，先把上身扭约 90°，在起身卸力的瞬间把下身转 180° 跟上。记住'下/上/下'。",
+        "req_zh": "向任意方向转一次。"
+      },
+      {
+        "en": "Stationary two-foot jump",
+        "zh": "原地双脚跳",
+        "vid": "P6Pf2PLCZu8",
+        "tip": "A small two-foot hop in place, landing balanced.",
+        "desc_en": "Knees and ankles bent, press down and push off so both feet leave the ice; land on two feet back in a bent-knee position. Think 'bend/up/bend'.",
+        "req_en": "One jump with a controlled landing.",
+        "desc_zh": "屈膝屈踝，向下压再蹬地让双脚离冰；双脚落地回到屈膝姿势。记住'屈/起/屈'。",
+        "req_zh": "完成一次跳，落地要稳。"
+      },
+      {
+        "en": "Forward skating perimeter of ice surface",
+        "zh": "沿冰场边缘向前滑行",
+        "vid": "ui87EmD8O9I",
+        "tip": "Skate forward all the way around the edge of the rink.",
+        "desc_en": "Skate forward all the way around the edge of the rink using a repeating push-glide rhythm and side-of-blade pushes. Short two-foot glides between pushes are fine at this level.",
+        "req_en": "Complete one full lap of the perimeter in either direction.",
+        "desc_zh": "用连续'蹬-滑'节奏和刀刃侧面蹬冰，沿冰场边缘向前滑一整圈。此阶段两次蹬之间夹一点双脚滑行是允许的。",
+        "req_zh": "向任意方向沿边缘滑完整一圈。"
+      }
+    ]
+  },
+  "2": {
+    "label_en": "Stage 2",
+    "label_zh": "第 2 阶段",
+    "balance": [
+      {
+        "en": "Forward sculling",
+        "zh": "向前葫芦步",
+        "vid": "9BZkjQcaHto",
+        "tip": "Both feet trace in-and-out 'lemon' shapes to move forward without lifting feet.",
+        "desc_en": "From a start or while skating, bend the knees and bring the heels together, toes out. Press down so the feet glide outward into matching curves (no wider than just past shoulder width), then pull the toes back together and repeat. Think 'down/up/down/up'.",
+        "req_en": "At least 6 sculls in a row.",
+        "desc_zh": "起步或滑行中，屈膝、脚跟并拢、脚尖朝外。下压让双脚向外滑出画出对称的弧（最宽略超过肩宽），再把脚尖收回，重复。节奏是'下/上/下/上'。",
+        "req_zh": "连续至少 6 个葫芦步。"
+      },
+      {
+        "en": "Forward two-foot to one-foot glide",
+        "zh": "向前双脚转单脚滑行",
+        "vid": "0tnhmMpOH7g",
+        "tip": "Glide on two feet, then lift one and balance on a single blade.",
+        "desc_en": "From forward skating, glide on two feet for at least a second, then shift onto one foot and hold that glide for at least a second. Do it on each foot; keep the free foot close to the skating leg.",
+        "req_en": "Perform on each foot; each glide at least 1 second.",
+        "desc_zh": "向前滑行后，双脚滑至少 1 秒，再把重心移到单脚并保持至少 1 秒。两只脚都要做；浮足贴近支撑腿。",
+        "req_zh": "两只脚都做；每段滑行至少 1 秒。"
+      },
+      {
+        "en": "Forward push/glide sequence",
+        "zh": "向前蹬冰/滑行连续动作",
+        "vid": "dkvw7tikMfU",
+        "tip": "Push, glide, push, glide — building a real stride rhythm.",
+        "desc_en": "Move forward with an even left-right push-glide rhythm, pushing with the side of the blade. One sequence = a push-glide on each foot. Short two-foot glides between pushes are fine here.",
+        "req_en": "Cross the width of the ice with at least 50% blade pushes.",
+        "desc_zh": "用均匀的左-右'蹬-滑'节奏向前，用刀刃侧面蹬。一个循环 = 每只脚各一次蹬-滑。两次蹬间夹点双脚滑行可以。",
+        "req_zh": "横穿冰场宽度，至少 50% 是刀刃蹬冰。"
+      },
+      {
+        "en": "Forward one-foot glide with speed",
+        "zh": "带速度的向前单脚滑行",
+        "vid": "CUJUUL61asA",
+        "tip": "Carry speed into a long balanced glide on one foot.",
+        "desc_en": "From forward skating, build as much speed as you can, then glide on one foot. Train both feet; straight line or curve. Keep the free foot near the skating leg.",
+        "req_en": "Hold the glide at least 2 seconds on either foot.",
+        "desc_zh": "向前滑行尽量加速，然后单脚滑行。两只脚都练；直线或弧线都行。浮足贴近支撑腿。",
+        "req_zh": "任意一只脚滑行保持至少 2 秒。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Forward stop",
+        "zh": "向前停止",
+        "vid": "tGjuxCkE8ag",
+        "tip": "Come to a controlled stop while moving forward (snowplow/one-foot).",
+        "desc_en": "From a forward two-foot glide, bend the knees and use one or both feet to press into the ice forward-and-outward, toes turned slightly in. Train left, right, and both feet.",
+        "req_en": "One full stop of choice; must make snow while stopping.",
+        "desc_zh": "从向前双脚滑行，屈膝，用一只或两只脚向前外侧压冰，脚尖略内扣。左脚、右脚、双脚都要练。",
+        "req_zh": "完成任意一种完整停止；停止时必须刮出冰末儿。"
+      },
+      {
+        "en": "Backward two-foot sit glide",
+        "zh": "向后双脚下蹲滑行",
+        "vid": "h9R-RRlNHNM",
+        "tip": "Glide backward while sinking into a low sit.",
+        "desc_en": "From backward skating, glide on two feet and sink into a sit — upper body forward, knees bent to lower the seat to roughly 135°–90°.",
+        "req_en": "Glide at least 1 second in a 135°–90° sit.",
+        "desc_zh": "向后滑行后，双脚滑行同时下蹲——上身前倾、屈膝把臀部降到约 135°–90°。",
+        "req_zh": "在 135°–90° 蹲姿下滑行至少 1 秒。"
+      },
+      {
+        "en": "Backward two-foot to one-foot glide",
+        "zh": "向后双脚转单脚滑行",
+        "vid": "Y5H0d4MQSkU",
+        "tip": "Backward glide shifting onto one foot, on a curve.",
+        "desc_en": "From backward skating, glide on two feet then shift onto one foot. At this intro level the one-foot glide just needs to start, not be held long. Do it on each foot.",
+        "req_en": "Perform on each foot.",
+        "desc_zh": "向后滑行后，双脚滑再把重心移到单脚。此入门阶段单脚滑只要能起来即可，不必保持很久。两只脚都做。",
+        "req_zh": "两只脚都做。"
+      },
+      {
+        "en": "Backward push/glide sequence",
+        "zh": "向后蹬冰/滑行连续动作",
+        "vid": "qwaGNOyIVEU",
+        "tip": "Backward version of push-glide — stride moving backward.",
+        "desc_en": "Skate backward with a left-right push-glide rhythm using 'C' pushes. You can keep both feet down or lift one now and then; one- or two-foot glides between pushes are fine. Use arms freely for rhythm.",
+        "req_en": "Travel about 13 m (half the rink width).",
+        "desc_zh": "用左-右'蹬-滑'节奏向后滑，借助'C'形蹬冰。可以双脚不离冰，也可以偶尔抬一只脚；两次蹬间单脚或双脚滑都行。手臂自由配合节奏。",
+        "req_zh": "移动约 13 米（半个冰场宽度）。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Forward two-foot turn",
+        "zh": "向前双脚转身",
+        "vid": "LTsRHjnx63g",
+        "tip": "While gliding forward on two feet, rotate to face backward.",
+        "desc_en": "From forward skating, glide on two feet (hip-width or narrower), bend the knees and rotate the upper body toward the turn. As you rise, weight moves forward on the blades and the hips/feet swing 180° to match, exiting on a backward glide. Both directions; curve preferred but a straight line is okay.",
+        "req_en": "Perform a turn in each direction.",
+        "desc_zh": "向前滑行后，双脚滑（与髋同宽或更窄），屈膝并把上身朝转向一侧旋转。起身时重心移到刀前部，髋和脚转 180° 跟上，转成向后滑出。两个方向都做；最好在弧线上，直线也可以。",
+        "req_zh": "两个方向各转一次。"
+      },
+      {
+        "en": "Backward two-foot turn",
+        "zh": "向后双脚转身",
+        "vid": "UJnxbD3NnPo",
+        "tip": "While gliding backward on two feet, rotate to face forward.",
+        "desc_en": "From backward skating, glide on two feet, bend the knees and rotate the upper body toward the outside of the curve. As you rise, weight moves back on the blades and the hips/feet swing 180° to match, exiting on a forward glide. Both directions.",
+        "req_en": "Perform a turn in each direction.",
+        "desc_zh": "向后滑行后，双脚滑，屈膝并把上身朝弧线外侧旋转。起身时重心移到刀后部，髋和脚转 180° 跟上，转成向前滑出。两个方向都做。",
+        "req_zh": "两个方向各转一次。"
+      },
+      {
+        "en": "Forward 180° glide turn",
+        "zh": "向前 180° 滑行转身",
+        "vid": "cdgVrxFxzDw",
+        "tip": "A smooth half-turn done in one continuous glide.",
+        "desc_en": "From forward skating, glide on two feet, bend the knees and lean into a curve to carve a 180° U-turn, exiting with forward skating. Both directions.",
+        "req_en": "Perform the glide turn in each direction.",
+        "desc_zh": "向前滑行后，双脚滑，屈膝并压进弧线，划出 180° 的 U 形转弯，再向前滑出。两个方向都做。",
+        "req_zh": "两个方向各做一次滑行转弯。"
+      },
+      {
+        "en": "Forward two-foot jump",
+        "zh": "向前双脚跳",
+        "vid": "IIJRVnNx4BI",
+        "tip": "A small jump moving forward, landing on two feet.",
+        "desc_en": "From a forward two-foot glide, bend the knees, press down, then push off explosively with arms and legs so both feet leave the ice. Land on two feet with bent knees into a controlled glide — controlled glide both in and out.",
+        "req_en": "Perform one jump.",
+        "desc_zh": "从向前双脚滑行，屈膝下压，再用手臂和腿爆发蹬地让双脚离冰。双脚屈膝落地接稳定滑行——进出都要有控制的滑行。",
+        "req_zh": "完成一次跳。"
+      }
+    ]
+  },
+  "3": {
+    "label_en": "Stage 3",
+    "label_zh": "第 3 阶段",
+    "balance": [
+      {
+        "en": "Forward stationary blade push",
+        "zh": "原地刀刃推进",
+        "vid": "o2KQHEaxUWM",
+        "tip": "From standing, push with the blade edge to start moving.",
+        "desc_en": "From a standstill with feet in a T, V or L (not precise), press on the back foot and push off the side of the blade. Shift onto the skating foot and hold a one-foot glide, free foot near the skating leg. Both feet; straight line or curve.",
+        "req_en": "Sustain the glide at least 2 seconds on either foot.",
+        "desc_zh": "原地站立，双脚摆成 T、V 或 L 形（不必精确），压后脚用刀刃侧面蹬出。重心移到支撑脚保持单脚滑行，浮足贴近支撑腿。两只脚都做；直线或弧线均可。",
+        "req_zh": "任意一只脚滑行保持至少 2 秒。"
+      },
+      {
+        "en": "Forward two-foot slalom",
+        "zh": "向前双脚蛇形(slalom)",
+        "vid": "9aR0v2AIFK4",
+        "tip": "Snake left-and-right on two feet through a line of cones.",
+        "desc_en": "From a two-foot glide, press into the ice with a down-up knee rhythm and a twist/lean of the upper body to weave through a straight line of pylons. Arms move freely to help the twist.",
+        "req_en": "Weave through at least 6 pylons.",
+        "desc_zh": "从双脚滑行，用'下-上'屈膝节奏配合上身扭转/侧倾，蛇形穿过直线排列的桩。手臂自由摆动帮助扭转。",
+        "req_zh": "穿过至少 6 个桩。"
+      },
+      {
+        "en": "Forward circle thrusts",
+        "zh": "向前画圆蹬冰",
+        "vid": "ymtUSZdd5NQ",
+        "tip": "Push outward repeatedly to travel around a circle.",
+        "desc_en": "Skating on a circle, glide on two feet (shoulder-width max). Using the blade side, push the outside foot back about 30° before it leaves the ice, holding the inside-foot glide ~1 second, then back to two feet. Repeat. Both directions.",
+        "req_en": "One full circle each direction, at least 75% blade pushes.",
+        "desc_zh": "在圆上滑行，双脚滑（最宽肩宽）。用刀刃把外侧脚向后约 30° 蹬出再离冰，保持内侧脚滑约 1 秒，再回双脚。重复。两个方向都做。",
+        "req_zh": "每个方向滑一整圈，至少 75% 刀刃蹬冰。"
+      },
+      {
+        "en": "Walking crosscuts",
+        "zh": "行走式交叉步",
+        "vid": "nXMrpJc-wM0",
+        "tip": "Step one foot over the other while walking a curve — the start of crossovers.",
+        "desc_en": "From standing with feet parallel and sideways to where you're going, shift onto one foot and cross the other over onto the ice. Then pick up the under foot and return it to start. Repeat both directions — holding the crossed position is expected.",
+        "req_en": "At least 4 walking crosscuts each direction.",
+        "desc_zh": "双脚平行、侧对前进方向站立，重心移到一只脚，另一只脚交叉过来踩冰。再把下面那只脚抬起放回起点。重复，两个方向都做——保持交叉姿势是正常的。",
+        "req_zh": "每个方向至少 4 个交叉步。"
+      },
+      {
+        "en": "Forward two-foot to one-foot curve glide",
+        "zh": "向前双脚转单脚弧线滑行",
+        "vid": "n1H9B3PjiOI",
+        "tip": "On a curve, glide two feet then one, holding the edge.",
+        "desc_en": "On a curve, glide on two feet then shift onto one foot for at least 2 seconds. Do it on both feet in both directions so you feel inside and outside edges. Free foot near the skating leg.",
+        "req_en": "Perform on each foot in both directions.",
+        "desc_zh": "在弧线上，双脚滑后移到单脚保持至少 2 秒。两只脚在两个方向都做，体会内刃和外刃。浮足贴近支撑腿。",
+        "req_zh": "两只脚、两个方向都做。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Forward stop with speed",
+        "zh": "带速度的向前停止",
+        "vid": "hc6AVEXrqaA",
+        "tip": "Same forward stop, but coming in with real speed.",
+        "desc_en": "From fast forward skating, glide on two feet, bend the knees and press into the ice hard enough for a quick stop. Train left, right, and both feet.",
+        "req_en": "Perform 2 different complete stops.",
+        "desc_zh": "从快速向前滑行，双脚滑，屈膝并用力压冰做出快速停止。左脚、右脚、双脚都练。",
+        "req_zh": "完成 2 种不同的完整停止。"
+      },
+      {
+        "en": "Backward sculling",
+        "zh": "向后葫芦步",
+        "vid": "iojPu9Blvc0",
+        "tip": "Backward lemon shapes to power yourself backward.",
+        "desc_en": "From backward skating or a start, bend the knees and bring the toes together, heels out. Press down so feet glide outward into curves, then pull the heels back together. Think 'down/up/down/up'.",
+        "req_en": "At least 6 backward sculls in a row.",
+        "desc_zh": "向后滑行或起步，屈膝、脚尖并拢、脚跟朝外。下压让双脚向外滑出弧线，再把脚跟收回。节奏'下/上/下/上'。",
+        "req_zh": "连续至少 6 个向后葫芦步。"
+      },
+      {
+        "en": "Backward two-foot to one-foot glide",
+        "zh": "向后双脚转单脚滑行",
+        "vid": "7KIqhQXhOsk",
+        "tip": "Backward glide shifting onto one foot, on a curve.",
+        "desc_en": "From backward skating, glide on two feet at least a second, then shift onto one foot and hold at least a second. Both feet; straight line or curve. Free foot near the skating leg.",
+        "req_en": "Perform on each foot; each glide at least 1 second.",
+        "desc_zh": "向后滑行后，双脚滑至少 1 秒，再移到单脚保持至少 1 秒。两只脚；直线或弧线。浮足贴近支撑腿。",
+        "req_zh": "两只脚都做；每段滑行至少 1 秒。"
+      },
+      {
+        "en": "Backward push/glide sequence",
+        "zh": "向后蹬冰/滑行连续动作",
+        "vid": "4K7ndqHCslg",
+        "tip": "Backward version of push-glide — stride moving backward.",
+        "desc_en": "Same as the Stage 2 backward push-glide, but performed with more power and speed.",
+        "req_en": "Perform across the full width of the ice.",
+        "desc_zh": "和第 2 阶段的向后蹬-滑相同，但要更有力、更快。",
+        "req_zh": "横穿整个冰场宽度。"
+      },
+      {
+        "en": "Backward one-foot glide with speed",
+        "zh": "带速度的向后单脚滑行",
+        "vid": "ZxqHWu06zf0",
+        "tip": "Carry backward speed into a one-foot glide.",
+        "desc_en": "From backward skating, build as much speed as you can, then glide on one foot. Both feet; straight line or curve. Free foot near the skating leg.",
+        "req_en": "Sustain the glide at least 2 seconds on either foot.",
+        "desc_zh": "向后滑行尽量加速，然后单脚滑行。两只脚；直线或弧线。浮足贴近支撑腿。",
+        "req_zh": "任意一只脚滑行保持至少 2 秒。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Forward two-foot quick turn",
+        "zh": "向前双脚快速转身",
+        "vid": "Xa8-LCsI9fM",
+        "tip": "A fast forward-to-backward pivot on two feet.",
+        "desc_en": "Same as the Stage 2 forward two-foot turn, but done with a quick snap and a sustained exit glide.",
+        "req_en": "Perform a turn in both directions.",
+        "desc_zh": "和第 2 阶段向前双脚转身相同，但要转得快、并保持转出后的滑行。",
+        "req_zh": "两个方向各转一次。"
+      },
+      {
+        "en": "Backward two-foot quick turn",
+        "zh": "向后双脚快速转身",
+        "vid": "ZP8tnFb4HII",
+        "tip": "A fast backward-to-forward pivot on two feet.",
+        "desc_en": "Same as the Stage 2 backward two-foot turn, but done with a quick snap and a sustained exit glide.",
+        "req_en": "Perform a turn in both directions.",
+        "desc_zh": "和第 2 阶段向后双脚转身相同，但要转得快、并保持转出后的滑行。",
+        "req_zh": "两个方向各转一次。"
+      },
+      {
+        "en": "Forward 360° step turn",
+        "zh": "向前 360° 步法转身",
+        "vid": "qmHQ4SOtFU8",
+        "tip": "Step all the way around a full circle while moving forward.",
+        "desc_en": "From forward skating, take a series of small steps to rotate a full 360° (like the Pre-CanSkate 360° march) while keeping your forward momentum. Both directions. This builds the weight transfer needed later for the C step.",
+        "req_en": "Complete a full 360° keeping momentum, either direction.",
+        "desc_zh": "从向前滑行，用一连串小碎步转满 360°（类似 Pre-CanSkate 的原地踏步转圈），同时保持向前的动量。两个方向都做。这为以后的 C 字步打下重心转移基础。",
+        "req_zh": "保持动量完成 360°，任意方向均可。"
+      },
+      {
+        "en": "Backward two-foot jump",
+        "zh": "向后双脚跳",
+        "vid": "BRPySWVvNEM",
+        "tip": "A small jump while travelling backward.",
+        "desc_en": "From a backward two-foot glide, bend the knees, press down, then push off explosively so both feet leave the ice. Land on two feet with bent knees into a controlled glide — controlled both in and out.",
+        "req_en": "Perform one jump.",
+        "desc_zh": "从向后双脚滑行，屈膝下压，再爆发蹬地让双脚离冰。双脚屈膝落地接稳定滑行——进出都要有控制。",
+        "req_zh": "完成一次跳。"
+      },
+      {
+        "en": "Fast forward perimeter skating",
+        "zh": "沿边缘快速向前滑行",
+        "vid": "lTOoOHjziPo",
+        "tip": "Skate the edge of the rink with real speed.",
+        "desc_en": "Same as the Stage 1 perimeter lap, but faster, more powerful, with an even rhythm. Two-foot glides between pushes are no longer allowed at this level.",
+        "req_en": "Complete one full lap of the perimeter, either direction.",
+        "desc_zh": "和第 1 阶段绕场一圈相同，但要更快、更有力、节奏均匀。此阶段不再允许两次蹬之间夹双脚滑行。",
+        "req_zh": "沿边缘滑完整一圈，任意方向。"
+      }
+    ]
+  },
+  "4": {
+    "label_en": "Stage 4",
+    "label_zh": "第 4 阶段",
+    "balance": [
+      {
+        "en": "Forward crosscuts",
+        "zh": "向前交叉步",
+        "vid": "Usc6OqjeaH8",
+        "tip": "True crossovers on a curve — outside foot crosses over the inside.",
+        "desc_en": "On a circle, start from a circle-thrust push. Cross the outside foot over the inside foot into a short crossed two-foot glide; the under foot then pushes outside the circle and steps back beside the skating foot. Repeat. Emphasis on 'bend, push' and 'cross and glide'.",
+        "req_en": "One full circle each direction, 50%+ blade pushes, holding a short crossed glide at least half the time.",
+        "desc_zh": "在圆上，从画圆蹬冰开始。外侧脚交叉到内侧脚上，形成短暂的交叉双脚滑行；下面那只脚向圆外蹬出再回到支撑脚旁。重复。强调'屈、蹬'和'交叉、滑行'。",
+        "req_zh": "每方向一整圈，刀刃蹬冰 ≥50%，至少一半时间保持交叉滑行。"
+      },
+      {
+        "en": "Forward inside giant slalom",
+        "zh": "向前内刃大蛇形",
+        "vid": "C-lxHU6NgHw",
+        "tip": "Big sweeping turns leaning on the inside edges.",
+        "desc_en": "Skating forward through staggered pylons (~2.5 m apart), lift the inside foot and lean toward each pylon to carve a one-foot curve, then skate to the next and switch feet. As you improve, fewer steps between pylons.",
+        "req_en": "At least 6 pylons or defined curves.",
+        "desc_zh": "向前穿过交错排列的桩（约 2.5 米间距），在每个桩处抬起内侧脚、向桩侧倾出一个单脚弧，再滑向下一个并换脚。越熟练，桩间步数越少。",
+        "req_zh": "至少 6 个桩或明确的弧。"
+      },
+      {
+        "en": "Forward outside giant slalom",
+        "zh": "向前外刃大蛇形",
+        "vid": "iF0JV5gMUus",
+        "tip": "Big sweeping turns leaning on the outside edges.",
+        "desc_en": "Same as the inside giant slalom, but lift the outside foot and lean toward each pylon to carve the one-foot curve on the outside edge.",
+        "req_en": "At least 6 pylons or defined curves.",
+        "desc_zh": "和向前内刃大蛇形相同，但抬起外侧脚、向桩侧倾出外刃单脚弧。",
+        "req_zh": "至少 6 个桩或明确的弧。"
+      },
+      {
+        "en": "Forward lunge",
+        "zh": "向前弓步滑行",
+        "vid": "CkdMf2KEyTI",
+        "tip": "Glide with one knee deeply bent and the other leg extended behind.",
+        "desc_en": "Build speed, glide on two feet, then step into a lunge — front knee bent ~90°, back leg straight behind with that foot turned out. Hands may rest on the front knee. Both feet.",
+        "req_en": "Hold the lunge at least 2 seconds on either foot.",
+        "desc_zh": "加速、双脚滑行，再踏进弓步——前膝约 90°，后腿伸直、后脚外撇。可把手放在前膝上。两只脚都做。",
+        "req_zh": "任意一只脚弓步保持至少 2 秒。"
+      },
+      {
+        "en": "Forward spiral",
+        "zh": "向前燕式平衡(spiral)",
+        "vid": "C4aPalSSZDQ",
+        "tip": "Glide on one foot with the free leg lifted behind (like an arabesque).",
+        "desc_en": "From forward skating, settle on two feet, shift onto one foot and lift the other leg up and back. Lean the upper body forward until the torso is roughly parallel to the ice, free leg up to hip height (85–90°). Straight line or curve; both feet.",
+        "req_en": "Hold the position at least 1 second on either foot.",
+        "desc_zh": "向前滑行后稳住双脚，移到单脚并把另一条腿向上向后抬起。上身前倾到躯干大致与冰面平行，浮腿抬到髋高（85–90°）。直线或弧线；两只脚都做。",
+        "req_zh": "任意一只脚保持至少 1 秒。"
+      },
+      {
+        "en": "Drop-down drill",
+        "zh": "下蹲练习",
+        "vid": "YkUnNhPea18",
+        "tip": "Quickly drop low to the ice and pop back up while moving.",
+        "desc_en": "While skating forward, accelerate and drop safely to the ice, then recover and stand as quickly as possible to keep skating forward. Variations welcome (sit, slide on stomach, knee spin, etc.).",
+        "req_en": "Perform once using your method of choice.",
+        "desc_zh": "向前滑行中加速并安全地坐倒到冰面，然后尽快恢复站起继续向前滑。鼓励各种变化（坐倒、趴滑、跪转等）。",
+        "req_zh": "用自选方式完成一次。"
+      },
+      {
+        "en": "Forward “V” start",
+        "zh": "向前 V 字起步",
+        "vid": "xXzeUKBWQoI",
+        "tip": "Heels together, toes out — push off in a V to start.",
+        "desc_en": "From a standstill with feet in a V, take short quick steps ('running' on the blades, toes still turned out), lengthening each stride until you settle into a push-glide rhythm.",
+        "req_en": "At least 4 V steps/runs with acceleration.",
+        "desc_zh": "原地双脚摆 V 形，用短促快速的小步（脚尖外撇地在刀上'跑'），逐步加大步幅直到进入'蹬-滑'节奏。",
+        "req_zh": "至少 4 个带加速的 V 字步/跑。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Backward stop",
+        "zh": "向后停止",
+        "vid": "4YJb-3jUc2U",
+        "tip": "Bring yourself to a controlled stop while moving backward.",
+        "desc_en": "From backward skating, glide on two feet, bend the knees and use one or both feet to press into the ice backward-and-outward, toes turned slightly out. Train left, right, and both feet.",
+        "req_en": "One full stop of choice; must make snow while stopping.",
+        "desc_zh": "向后滑行后，双脚滑，屈膝，用一只或两只脚向后外侧压冰，脚尖略外撇。左脚、右脚、双脚都练。",
+        "req_zh": "完成任意一种完整停止；停止时必须刮出冰末儿。"
+      },
+      {
+        "en": "Backward circle thrusts or pumps",
+        "zh": "向后画圆蹬冰",
+        "vid": "brVVctyyNIA",
+        "tip": "Push around a circle to gain speed travelling backward.",
+        "desc_en": "On a circle moving backward: Thrusts — push the outside foot out-and-forward off its inside edge, hold the inside-foot glide ~1 second, repeat. Pumps — same push but keep both feet on the ice and keep repeating. Both start from a backward 'C' push and both lead toward backward crosscuts.",
+        "req_en": "One full circle in each direction.",
+        "desc_zh": "在圆上向后滑：画圆蹬冰——用外侧脚内刃向外向前蹬出，保持内侧脚滑约 1 秒，重复。连续蹬冰——同样的蹬法但双脚不离冰、连续重复。两者都从向后'C'形蹬冰开始，都是向后交叉步的基础。",
+        "req_zh": "每个方向滑一整圈。"
+      },
+      {
+        "en": "Backward two-foot slalom",
+        "zh": "向后双脚蛇形",
+        "vid": "tvEj-lGSa68",
+        "tip": "Snake side to side on two feet while moving backward.",
+        "desc_en": "From backward skating, glide on two feet, press into the ice with a down-up knee rhythm and an upper-body twist/lean to weave through a straight line of pylons. Arms free.",
+        "req_en": "Weave through at least 6 pylons.",
+        "desc_zh": "向后滑行后，双脚滑，用'下-上'屈膝节奏配合上身扭转/侧倾，蛇形穿过直线排列的桩。手臂自由。",
+        "req_zh": "穿过至少 6 个桩。"
+      },
+      {
+        "en": "Backward one-foot glide with curve",
+        "zh": "向后单脚弧线滑行",
+        "vid": "NpdtMSlpraM",
+        "tip": "Backward glide on one foot, holding a curving edge.",
+        "desc_en": "On a backward circle or curve, build speed and glide on one foot. Train both feet in both directions to feel all four backward edges. Free foot near the skating leg.",
+        "req_en": "One glide on each foot, sustained at least 4 seconds.",
+        "desc_zh": "在向后的圆或弧上加速并单脚滑行。两只脚、两个方向都练，体会全部四种向后刃。浮足贴近支撑腿。",
+        "req_zh": "每只脚滑一次，保持至少 4 秒。"
+      },
+      {
+        "en": "Sustained forward one-foot glide",
+        "zh": "持续向前单脚滑行",
+        "vid": "gMpKOr1A4Qc",
+        "tip": "Hold a long, steady one-foot glide forward.",
+        "desc_en": "From forward skating, build as much speed as you can approaching the blue line, then glide on one foot from blue line to blue line. Both feet; free foot near the skating leg.",
+        "req_en": "Perform on either foot (blue line to blue line).",
+        "desc_zh": "向前滑行，在接近蓝线时尽量加速，然后单脚从一条蓝线滑到下一条蓝线。两只脚都做；浮足贴近支撑腿。",
+        "req_zh": "任意一只脚完成（蓝线到蓝线）。"
+      },
+      {
+        "en": "Speed drill #1",
+        "zh": "速度练习 #1",
+        "vid": "sfjtV2c4du0",
+        "tip": "Timed sprint between lines to measure and build speed.",
+        "desc_en": "From a standstill, skate forward from the goal line to the first blue line in 9 seconds or less, using both feet equally in an alternating push-glide. Arms free, core controlled.",
+        "req_en": "Complete in 9 seconds or less.",
+        "desc_zh": "原地起步，从球门线滑到第一条蓝线，用时不超过 9 秒，两脚均衡地交替蹬-滑。手臂自由，核心稳定。",
+        "req_zh": "用时不超过 9 秒完成。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Forward one-foot turn",
+        "zh": "向前单脚转身",
+        "vid": "Yoq624dR1mY",
+        "tip": "Turn forward-to-backward on a single foot.",
+        "desc_en": "Like the two-foot turn but on one foot, from a standstill. Train both feet, both directions, covering all four forward turns (right/left outside, right/left inside). Free foot near the skating leg.",
+        "req_en": "1 outside and 1 inside turn on either foot, each with a 1-second glide in and out.",
+        "desc_zh": "和双脚转身动作类似，但单脚、从静止开始。两只脚、两个方向都练，覆盖全部四种向前转（左右外刃、左右内刃）。浮足贴近支撑腿。",
+        "req_zh": "任意一只脚做 1 个外刃转和 1 个内刃转，每个转进出各保持 1 秒滑行。"
+      },
+      {
+        "en": "Backward 360° step turn",
+        "zh": "向后 360° 步法转身",
+        "vid": "Pjm-DJq1FAE",
+        "tip": "Step a full circle while travelling backward.",
+        "desc_en": "From backward skating, take a series of small steps to rotate a full 360° (like the 360° march) while keeping backward momentum. Both directions. Builds the weight transfer for the C step.",
+        "req_en": "Complete a full 360° keeping momentum, either direction.",
+        "desc_zh": "从向后滑行，用一连串小碎步转满 360°（类似原地踏步转圈），同时保持向后动量。两个方向都做。为 C 字步打基础。",
+        "req_zh": "保持动量完成 360°，任意方向。"
+      },
+      {
+        "en": "Forward to backward two-foot jump",
+        "zh": "向前转向后双脚跳",
+        "vid": "PveEfszt1Fg",
+        "tip": "Jump and rotate from facing forward to backward, land on two feet.",
+        "desc_en": "Using the forward two-foot-turn action, glide on two feet, bend the knees, then jump and rotate 180° to land backward on two feet with bent knees, exiting backward. Both directions; curve preferred, straight line okay.",
+        "req_en": "Perform one jump in either direction.",
+        "desc_zh": "用向前双脚转身的动作，双脚滑、屈膝，然后跳起转 180°，向后双脚屈膝落地，向后滑出。两个方向都做；最好在弧线上，直线也行。",
+        "req_zh": "任意方向完成一次跳。"
+      },
+      {
+        "en": "Backward to forward two-foot jump",
+        "zh": "向后转向前双脚跳",
+        "vid": "pbXZEhZs0Y8",
+        "tip": "Jump and rotate from backward to forward, land on two feet.",
+        "desc_en": "Using the backward two-foot-turn action, glide on two feet, bend the knees, then jump and rotate 180° to land forward on two feet with bent knees, exiting forward. Both directions; curve preferred, straight line okay.",
+        "req_en": "Perform one jump in either direction.",
+        "desc_zh": "用向后双脚转身的动作，双脚滑、屈膝，然后跳起转 180°，向前双脚屈膝落地，向前滑出。两个方向都做；最好在弧线上，直线也行。",
+        "req_zh": "任意方向完成一次跳。"
+      },
+      {
+        "en": "Two-foot spin",
+        "zh": "双脚旋转",
+        "vid": "xTH22-6YyXE",
+        "tip": "Rotate in place on two feet.",
+        "desc_en": "Knees bent, arms out to the sides. Combine knee action with a hip/shoulder twist to start spinning on two feet, staying upright, feet no wider than hip-width. Draw the arms in to 'hug' the body. Start from a standstill or a forward glide.",
+        "req_en": "At least 2 revolutions in your chosen direction.",
+        "desc_zh": "屈膝、双臂侧平举。用屈膝配合髋/肩扭转启动双脚旋转，身体直立，双脚不超过髋宽。把手臂收向身体'抱'住。可从静止或向前滑行进入。",
+        "req_zh": "向自选方向至少转 2 圈。"
+      },
+      {
+        "en": "Two-foot sit spin",
+        "zh": "双脚蹲转",
+        "vid": "S0CkVYpvoZM",
+        "tip": "A two-foot spin done low in a sitting position.",
+        "desc_en": "From the two-foot spin, bend the knees down into a sit (~90°). Arms may stretch out front for balance during the spin. Start from a standstill or forward glide.",
+        "req_en": "At least 1 revolution in your chosen direction.",
+        "desc_zh": "在双脚旋转基础上，屈膝下蹲成坐姿（约 90°）。旋转时手臂可前伸保持平衡。可从静止或向前滑行进入。",
+        "req_zh": "向自选方向至少转 1 圈。"
+      }
+    ]
+  },
+  "5": {
+    "label_en": "Stage 5",
+    "label_zh": "第 5 阶段",
+    "balance": [
+      {
+        "en": "Forward crosscuts figure-8",
+        "zh": "向前交叉步 8 字",
+        "vid": "e5HxS-YIJaI",
+        "tip": "Crossovers linked into a figure-8 pattern.",
+        "desc_en": "The Stage 4 forward crosscuts, now linked into a figure-8 with a steady 'push, cross, push, cross' rhythm.",
+        "req_en": "One full figure-8, 50%+ blade pushes on each circle.",
+        "desc_zh": "把第 4 阶段的向前交叉步连成 8 字，保持稳定的'蹬、交叉、蹬、交叉'节奏。",
+        "req_zh": "完成一个完整 8 字，每个圆刀刃蹬冰 ≥50%。"
+      },
+      {
+        "en": "Forward inside edges",
+        "zh": "向前内刃",
+        "vid": "VsGmAZmWSvI",
+        "tip": "Glide holding a clean inside edge, body leaning into the circle.",
+        "desc_en": "Using the Stage 3 stationary push, push onto a curve and hold a glide on an inside edge for half a circle, then switch feet. A line or pylons can guide you. Free foot near the skating leg.",
+        "req_en": "At least 4 consecutive edges using blade pushes.",
+        "desc_zh": "用第 3 阶段的原地蹬冰，蹬上弧线并在内刃上滑半圈，再换脚。可用线或桩做参照。浮足贴近支撑腿。",
+        "req_zh": "用刀刃蹬冰连续做至少 4 个刃。"
+      },
+      {
+        "en": "Forward push/glide sequence",
+        "zh": "向前蹬冰/滑行连续动作",
+        "vid": "X1HN-yeAKQA",
+        "tip": "Refined stride with stronger push and longer glide.",
+        "desc_en": "The Stage 2 push-glide, now with real speed and a consistent rhythm. Power generation must show; blade pushes are required.",
+        "req_en": "Perform for one full length of the ice.",
+        "desc_zh": "第 2 阶段的蹬-滑，现在要有真正的速度和稳定节奏。必须看出发力；必须用刀刃蹬。",
+        "req_zh": "完成整个冰场长度。"
+      },
+      {
+        "en": "Inside spread eagle",
+        "zh": "内刃鲍步(spread eagle)",
+        "vid": "Otk5kUYyQHg",
+        "tip": "Glide with both feet turned out, heels facing each other, on inside edges.",
+        "desc_en": "From forward skating, turn both feet out into a spread eagle on a gentle curve — front foot on a forward inside edge, back foot following on a backward inside edge, body leaning into the curve. Both directions.",
+        "req_en": "Hold the position at least 1 second in either direction.",
+        "desc_zh": "向前滑行后，双脚外开成鲍步在缓弧上滑——前脚向前内刃，后脚跟着向后内刃，身体压进弧线。两个方向都做。",
+        "req_zh": "任意方向保持至少 1 秒。"
+      },
+      {
+        "en": "Forward one-foot slalom",
+        "zh": "向前单脚蛇形",
+        "vid": "BZbzfoatB5s",
+        "tip": "Snake through cones balancing on a single foot.",
+        "desc_en": "The Stage 2 two-foot slalom, now on one foot, changing edges through the pylons. Arms free; small step-downs allowed. Both feet.",
+        "req_en": "Through at least 6 pylons on either foot.",
+        "desc_zh": "第 2 阶段双脚蛇形，现在用单脚，穿桩时换刃。手臂自由；允许小幅落脚。两只脚都做。",
+        "req_zh": "任意一只脚穿过至少 6 个桩。"
+      },
+      {
+        "en": "Running lateral crossovers",
+        "zh": "横向交叉跑动",
+        "vid": "rf014QDOBrQ",
+        "tip": "Quick sideways crossover steps, almost like running.",
+        "desc_en": "From standing sideways to your direction of travel, do walking crosscuts (Stage 3) but add a small jump to make it a running action. Feet stay parallel; arms free for balance.",
+        "req_en": "3 running crossovers in a row, either direction.",
+        "desc_zh": "侧对前进方向站立，做交叉步（第 3 阶段）但加一个小跳变成跑动。双脚保持平行；手臂自由保持平衡。",
+        "req_zh": "任意方向连续 3 个跑动交叉步。"
+      },
+      {
+        "en": "Forward perimeter skating with jumps",
+        "zh": "沿边缘向前滑行加跳跃",
+        "vid": "CzhUzTEu9Sc",
+        "tip": "Skate the rink edge, adding jumps along the way.",
+        "desc_en": "Skate the rink perimeter with a push-glide, jumping over the blue and red lines with any jump you like (two-foot, power, forward-to-backward, etc.). Both directions.",
+        "req_en": "One full lap, either direction.",
+        "desc_zh": "用蹬-滑绕场滑行，在蓝线和红线处用任意跳跃跳过（双脚跳、力量跳、向前转向后跳等）。两个方向都做。",
+        "req_zh": "完成一整圈，任意方向。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Forward two-foot side stop",
+        "zh": "向前双脚侧停",
+        "vid": "Wn3spYj-dWU",
+        "tip": "Turn sideways and stop on two feet (hockey-style).",
+        "desc_en": "From forward skating, glide on two feet, bend the knees, then rotate body and feet sideways (perpendicular to travel) and press the blades to stop. Feet stay parallel, no wider than shoulder-width. Both directions.",
+        "req_en": "One complete stop in each direction.",
+        "desc_zh": "向前滑行后，双脚滑，屈膝，然后把身体和双脚转向侧面（垂直于前进方向）压刃停住。双脚保持平行，不超过肩宽。两个方向都做。",
+        "req_zh": "每个方向完成一次完整停止。"
+      },
+      {
+        "en": "Backward stop with speed",
+        "zh": "带速度的向后停止",
+        "vid": "h5qswY4XrLo",
+        "tip": "Backward stop coming in with real speed.",
+        "desc_en": "The Stage 4 backward stop, now performed with as much speed as possible.",
+        "req_en": "At least 2 different stops (right, left, and/or both feet).",
+        "desc_zh": "第 4 阶段向后停止，现在尽量带速度完成。",
+        "req_zh": "至少 2 种不同停止（右脚、左脚和/或双脚）。"
+      },
+      {
+        "en": "Backward crosscuts",
+        "zh": "向后交叉步",
+        "vid": "oOcu92HwJvw",
+        "tip": "Crossovers on a curve while travelling backward.",
+        "desc_en": "From a backward circle thrust/pump, cross the outside foot over the inside foot; the under foot pushes outside the circle and returns to start. Repeat. You may lift the foot during the cross or keep it down. Both directions.",
+        "req_en": "One full circle in both directions.",
+        "desc_zh": "从向后画圆蹬冰/连续蹬冰，外侧脚交叉到内侧脚上；下面那只脚向圆外蹬出再回到起点。重复。交叉时可抬脚也可不抬。两个方向都做。",
+        "req_zh": "两个方向各滑一整圈。"
+      },
+      {
+        "en": "Backward inside giant slalom",
+        "zh": "向后内刃大蛇形",
+        "vid": "3dUxi_xMk9Q",
+        "tip": "Big backward turns on the inside edges.",
+        "desc_en": "Skating backward through staggered pylons (~2.5 m apart), lift the inside foot and lean toward each pylon to carve a one-foot curve, then to the next and switch feet.",
+        "req_en": "At least 6 pylons or defined curves.",
+        "desc_zh": "向后穿过交错排列的桩（约 2.5 米间距），在每个桩处抬内侧脚、向桩侧倾出单脚弧，再到下一个并换脚。",
+        "req_zh": "至少 6 个桩或明确的弧。"
+      },
+      {
+        "en": "Backward push/glide sequence",
+        "zh": "向后蹬冰/滑行连续动作",
+        "vid": "BnRGvF0GKxA",
+        "tip": "Backward version of push-glide — stride moving backward.",
+        "desc_en": "The Stage 2 backward push-glide, now with more speed and control. Power generation must be present.",
+        "req_en": "Perform for the full length of the ice.",
+        "desc_zh": "第 2 阶段向后蹬-滑，现在更快、更有控制。必须有发力。",
+        "req_zh": "完成整个冰场长度。"
+      },
+      {
+        "en": "Backward spiral",
+        "zh": "向后燕式平衡",
+        "vid": "Zq0QTEMYnyY",
+        "tip": "Backward glide with the free leg lifted behind.",
+        "desc_en": "The Stage 4 forward spiral, performed moving backward.",
+        "req_en": "Hold the position at least 1 second on either foot.",
+        "desc_zh": "把第 4 阶段的向前燕式平衡向后做。",
+        "req_zh": "任意一只脚保持至少 1 秒。"
+      },
+      {
+        "en": "Speed drill #2",
+        "zh": "速度练习 #2",
+        "vid": "1Zmds6Z7vIc",
+        "tip": "A longer/faster timed speed test.",
+        "desc_en": "From a standstill or moving start, skate forward from the goal line to the second blue line in 12 seconds or less, both feet alternating evenly. Arms free; train both directions.",
+        "req_en": "Complete in 12 seconds or less.",
+        "desc_zh": "原地或滑行起步，从球门线滑到第二条蓝线，用时不超过 12 秒，两脚均衡交替。手臂自由；两个方向都练。",
+        "req_zh": "用时不超过 12 秒完成。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Forward one-foot turn",
+        "zh": "向前单脚转身",
+        "vid": "AbvdaZyPzK4",
+        "tip": "Turn forward-to-backward on a single foot.",
+        "desc_en": "The Stage 4 forward one-foot turn, now with more balance and power. All four turns trained (right/left outside, right/left inside). Free foot near the skating leg.",
+        "req_en": "At least 3 turns, each with a sustained 1-second glide in and out.",
+        "desc_zh": "第 4 阶段向前单脚转身，现在更稳、更有力。四种转都练（左右外刃、左右内刃）。浮足贴近支撑腿。",
+        "req_zh": "至少 3 个转，每个转进出各保持 1 秒滑行。"
+      },
+      {
+        "en": "Forward 360° glide turn",
+        "zh": "向前 360° 滑行转身",
+        "vid": "oenXfZ7oYN4",
+        "tip": "A full-circle turn done in one continuous glide.",
+        "desc_en": "Building on the 180° glide turn, hold the glide to carve a full tight 360° circle, on one or two feet, exiting forward. Both directions.",
+        "req_en": "Perform in both directions.",
+        "desc_zh": "在 180° 滑行转弯基础上，保持滑行划出一个完整的紧凑 360° 圆，单脚或双脚均可，向前滑出。两个方向都做。",
+        "req_zh": "两个方向都做。"
+      },
+      {
+        "en": "Forward to backward one-foot jump",
+        "zh": "向前转向后单脚跳",
+        "vid": "EPMxFcEJ7Ww",
+        "tip": "Jump rotating forward-to-backward, landing on one foot.",
+        "desc_en": "The Stage 4 forward-to-backward two-foot jump, now on one foot. Train both feet and both edges.",
+        "req_en": "Perform one jump on your foot/edge of choice.",
+        "desc_zh": "第 4 阶段向前转向后双脚跳，现在用单脚。两只脚、两种刃都练。",
+        "req_zh": "用自选脚/刃完成一次跳。"
+      },
+      {
+        "en": "Forward power jump",
+        "zh": "向前力量跳",
+        "vid": "r4UC2zv1vI0",
+        "tip": "An explosive jump emphasizing height and power.",
+        "desc_en": "From forward skating, swing one leg forward while pressing down on the skating foot to launch into the air. The swinging leg returns to land under the body, then quickly transfers weight to the other foot for a forward glide exit. Land on the toe pick or flat. Both feet.",
+        "req_en": "Perform one jump on your foot of choice.",
+        "desc_zh": "向前滑行，把一条腿向前摆出同时压支撑脚蹬起跳到空中。摆动腿收回落到身体下方，迅速把重心换到另一只脚向前滑出。可用刀齿或刀刃平落。两只脚都练。",
+        "req_zh": "用自选脚完成一次跳。"
+      },
+      {
+        "en": "One-foot spin",
+        "zh": "单脚旋转",
+        "vid": "roSE7W57DUw",
+        "tip": "Rotate balanced on a single foot.",
+        "desc_en": "From a standstill, forward glide, or two-foot spin, knee bent — combine knee action with a hip/shoulder twist to start the spin, staying upright. Arms extend out then draw in. Forward or backward spin both fine.",
+        "req_en": "At least 2 revolutions in your chosen direction.",
+        "desc_zh": "从静止、向前滑行或双脚旋转进入，屈膝——用屈膝配合髋/肩扭转启动旋转，身体直立。手臂先伸开再收拢。直立旋转或反直立旋转都行。",
+        "req_zh": "向自选方向至少转 2 圈。"
+      },
+      {
+        "en": "Alternating foot spin",
+        "zh": "交替脚旋转",
+        "vid": "02C1Y8l-xbQ",
+        "tip": "Spin on one foot, then switch to spin on the other.",
+        "desc_en": "Start a two-foot or one-foot spin, then while keeping reasonable balance switch from spinning on one foot to the other, repeating until the spin ends. Travelling is fine; revolution count per foot doesn't matter — this builds toward advanced spins.",
+        "req_en": "At least 2 revolutions with at least 3 foot changes.",
+        "desc_zh": "从双脚或单脚旋转开始，在保持基本平衡的同时从一只脚换到另一只脚旋转，重复到旋转结束。位移可以；每只脚转几圈不重要——这是为高级旋转打基础。",
+        "req_zh": "至少转 2 圈，并至少换 3 次脚。"
+      },
+      {
+        "en": "Forward tight glide turns",
+        "zh": "向前小弧线滑行转身",
+        "vid": "zVsxg7Hb8cM",
+        "tip": "Quick, small linked glide turns.",
+        "desc_en": "Based on the 180° glide turn, with more speed and balance: the inside foot leads into the curve held slightly ahead, and weight shifts onto the back foot. This is a short-radius turn used instead of stopping-and-starting, done at low to medium speed.",
+        "req_en": "At least 6 tight glide turns in alternating directions.",
+        "desc_zh": "在 180° 滑行转弯基础上，更快、更稳：内侧脚领进弧线并略靠前，重心移到后脚。这是用来代替'停了再起'的小半径转弯，在中低速下完成。",
+        "req_zh": "交替方向至少做 6 个紧凑滑行转弯。"
+      }
+    ]
+  },
+  "6": {
+    "label_en": "Stage 6",
+    "label_zh": "第 6 阶段",
+    "balance": [
+      {
+        "en": "Forward power crosscuts",
+        "zh": "向前力量交叉步",
+        "vid": "vHYVYIXG5c0",
+        "tip": "Strong, powerful crossovers generating real speed.",
+        "desc_en": "The Stage 4 crosscuts, now strong and confident with proper blade pushes — on a figure-8 or separate circles. Arms free; power must be evident.",
+        "req_en": "At least one full circle each direction, 75%+ blade pushes.",
+        "desc_zh": "第 4 阶段交叉步，现在要强劲自信、刀刃蹬冰到位——8 字或分开的圆都行。手臂自由；必须看出力量。",
+        "req_zh": "每方向至少一整圈，刀刃蹬冰 ≥75%。"
+      },
+      {
+        "en": "Forward outside edges",
+        "zh": "向前外刃",
+        "vid": null,
+        "tip": "Glide holding a clean outside edge, leaning out of the circle.",
+        "desc_en": "Using the Stage 3 stationary push, push onto a curve and hold a glide on an OUTSIDE edge for half a circle, then switch feet. A line or pylons can guide you. Free foot near the skating leg.",
+        "req_en": "At least 4 consecutive edges using blade pushes.",
+        "desc_zh": "用第 3 阶段的原地蹬冰，蹬上弧线并在外刃上滑半圈，再换脚。可用线或桩做参照。浮足贴近支撑腿。",
+        "req_zh": "用刀刃蹬冰连续做至少 4 个刃。"
+      },
+      {
+        "en": "Forward one-foot slalom",
+        "zh": "向前单脚蛇形",
+        "vid": "06AAQMxG_qY",
+        "tip": "Snake through cones balancing on a single foot.",
+        "desc_en": "The Stage 5 forward one-foot slalom, now performed without any small step-downs.",
+        "req_en": "At least 4 edge changes/lobes on one foot.",
+        "desc_zh": "第 5 阶段向前单脚蛇形，现在不允许任何小幅落脚。",
+        "req_zh": "单脚至少做 4 次换刃/弧。"
+      },
+      {
+        "en": "Forward one-foot sit glide",
+        "zh": "向前单脚下蹲滑行",
+        "vid": "1DP_lMSg2yM",
+        "tip": "Glide low in a sit, balanced on one foot.",
+        "desc_en": "From forward skating, settle on two feet, shift onto one foot and extend the other leg to the front. Bend the skating knee/ankle, lean forward and lower into a sit; rise on one or two feet and exit forward. Both feet.",
+        "req_en": "Sit between 135°–90° on either foot, held at least 2 seconds.",
+        "desc_zh": "向前滑行后稳住双脚，移到单脚并把另一条腿前伸。屈支撑膝/踝、上身前倾下蹲成坐姿；用单脚或双脚起身向前滑出。两只脚都做。",
+        "req_zh": "任意一只脚坐到 135°–90° 之间，保持至少 2 秒。"
+      },
+      {
+        "en": "Forward spiral (curve or straight line)",
+        "zh": "向前燕式平衡(弧线或直线)",
+        "vid": "TXiYgEQSsEE",
+        "tip": "A held spiral position, on a curve or straight line.",
+        "desc_en": "The Stage 4 spiral, now on a curve or straight line with more speed, balance and extension.",
+        "req_en": "One spiral on either foot, held at least 1 second.",
+        "desc_zh": "第 4 阶段燕式平衡，现在在弧线或直线上做，更有速度、平衡和延展。",
+        "req_zh": "任意一只脚做一次，保持至少 1 秒。"
+      },
+      {
+        "en": "Forward crossover acceleration",
+        "zh": "交叉步加速",
+        "vid": "vWyI5W37ryE",
+        "tip": "Use crossovers to accelerate quickly.",
+        "desc_en": "From standing sideways to travel, cross the outer foot over, rotate to face your direction, take a series of short quick steps (like the V start), then lengthen into a powerful push-glide.",
+        "req_en": "Perform once, full width of the ice, in your chosen direction.",
+        "desc_zh": "侧对前进方向站立，外侧脚交叉过来，转身面向前进方向，先用一连串短促小步（像 V 字起步），再加大步幅成有力的蹬-滑。",
+        "req_zh": "向自选方向完成一次，横穿整个冰场宽度。"
+      },
+      {
+        "en": "Forward perimeter skating with crosscuts",
+        "zh": "沿边缘交叉步滑行",
+        "vid": "hJkQMu4YYwQ",
+        "tip": "Skate the rink edge using crossovers on the corners.",
+        "desc_en": "Skate the perimeter with a push-glide along the length and forward crosscuts across the width, showing power and control. Equal, consistent blade pushes required. Both directions.",
+        "req_en": "One full lap, your chosen direction.",
+        "desc_zh": "绕场滑行：长边用蹬-滑、宽边用向前交叉步，体现力量与控制。蹬冰必须均衡一致、用刀刃。两个方向都练。",
+        "req_zh": "向自选方向完成一整圈。"
+      },
+      {
+        "en": "Forward perimeter skating with stops",
+        "zh": "沿边缘滑行加停止",
+        "vid": "xwRoLuUPrbg",
+        "tip": "Skate the edge, adding controlled stops.",
+        "desc_en": "The perimeter lap above, but add a stop at each blue, red or goal line, showing a variety of stops (snowplow, two-foot side, one-foot side, backward, etc.). Both directions.",
+        "req_en": "One full lap with a variety of stops, your chosen direction.",
+        "desc_zh": "在上面的绕场基础上，在每条蓝线、红线或球门线处加一个停止，展示多种停止（铲雪式、双脚侧停、单脚侧停、向后停等）。两个方向都练。",
+        "req_zh": "向自选方向完成一整圈并展示多种停止。"
+      }
+    ],
+    "control": [
+      {
+        "en": "Forward one-foot side stop",
+        "zh": "向前单脚侧停",
+        "vid": "pNLGYQ_UcG4",
+        "tip": "Sideways stop balanced on a single foot.",
+        "desc_en": "The Stage 5 two-foot side stop, now on one foot: lift the foot closest to the direction of rotation. (Stopping left → lift the left foot, stopping on the right foot's inside edge.) Both directions; outside-edge stop is acceptable but not required.",
+        "req_en": "One complete stop in your chosen direction.",
+        "desc_zh": "第 5 阶段双脚侧停，现在用单脚：抬起更靠近转向方向的那只脚。（向左停 → 抬左脚，用右脚内刃停。）两个方向都练；外刃停可以但不要求。",
+        "req_zh": "向自选方向完成一次完整停止。"
+      },
+      {
+        "en": "Forward two-foot side stop with speed",
+        "zh": "带速度的向前双脚侧停",
+        "vid": "dEkRpdlwekA",
+        "tip": "Two-foot sideways stop entered with speed.",
+        "desc_en": "The Stage 5 two-foot side stop, now with more power and speed for a quicker stop.",
+        "req_en": "One complete stop in your chosen direction.",
+        "desc_zh": "第 5 阶段双脚侧停，现在更有力、更快，停得更急。",
+        "req_zh": "向自选方向完成一次完整停止。"
+      },
+      {
+        "en": "Backward outside giant slalom",
+        "zh": "向后外刃大蛇形",
+        "vid": "RE5F-eD2kXw",
+        "tip": "Big backward turns on the outside edges.",
+        "desc_en": "Skating backward through staggered pylons (~2.5 m apart), lift the inside foot and lean toward each pylon to carve a one-foot curve, then to the next and switch feet.",
+        "req_en": "At least 6 pylons or defined curves.",
+        "desc_zh": "向后穿过交错排列的桩（约 2.5 米间距），在每个桩处抬内侧脚、向桩侧倾出单脚弧，再到下一个并换脚。",
+        "req_zh": "至少 6 个桩或明确的弧。"
+      },
+      {
+        "en": "Backward crosscuts figure-8",
+        "zh": "向后交叉步 8 字",
+        "vid": "AvTR1Cko52w",
+        "tip": "Backward crossovers linked into a figure-8.",
+        "desc_en": "The Stage 5 backward crosscuts, now on a figure-8 with a steady 'push, cross, push, cross' rhythm and evident power.",
+        "req_en": "One complete figure-8.",
+        "desc_zh": "第 5 阶段向后交叉步，现在做成 8 字，保持'蹬、交叉、蹬、交叉'稳定节奏并有明显力量。",
+        "req_zh": "完成一个完整 8 字。"
+      },
+      {
+        "en": "Backward perimeter skating with crosscuts",
+        "zh": "沿边缘向后交叉步滑行",
+        "vid": "HIVZR6GZlCk",
+        "tip": "Skate the rink edge backward using crossovers.",
+        "desc_en": "Skate the perimeter backward with a push-glide along the length and backward crosscuts across the width, showing power and control. Equal, consistent pushes required. Both directions.",
+        "req_en": "One full lap, your chosen direction.",
+        "desc_zh": "向后绕场滑行：长边用蹬-滑、宽边用向后交叉步，体现力量与控制。蹬冰必须均衡一致。两个方向都练。",
+        "req_zh": "向自选方向完成一整圈。"
+      },
+      {
+        "en": "Backward one-foot slalom",
+        "zh": "向后单脚蛇形",
+        "vid": "tgcGpFVmK2Q",
+        "tip": "Backward cone-weaving on a single foot.",
+        "desc_en": "The Stage 5 one-foot slalom, performed backward. Small step-downs are allowed.",
+        "req_en": "At least 4 edge changes/lobes/curves.",
+        "desc_zh": "第 5 阶段单脚蛇形，向后做。允许小幅落脚。",
+        "req_zh": "至少 4 次换刃/弧。"
+      },
+      {
+        "en": "Backward one-foot spin",
+        "zh": "反直立旋转",
+        "vid": "0nJRGoFOoOY",
+        "tip": "Rotate backward-entry on a single foot.",
+        "desc_en": "From a standstill or two-foot spin, start a spin in either direction on a back outside edge (back spin). The edge doesn't need to be held throughout.",
+        "req_en": "At least 1 revolution in your chosen direction.",
+        "desc_zh": "从静止或双脚旋转进入，在向后外刃上向任意方向启动旋转（反直立旋转）。不必全程保持这个刃。",
+        "req_zh": "向自选方向至少转 1 圈。"
+      },
+      {
+        "en": "Speed drill #3",
+        "zh": "速度练习 #3",
+        "vid": "RbFGH_ojP-M",
+        "tip": "The most advanced timed speed test.",
+        "desc_en": "From a standstill or moving start, skate forward around the full perimeter of the ice in 35 seconds or less, with equal pushes. Arms free; train both directions.",
+        "req_en": "Complete in 35 seconds or less.",
+        "desc_zh": "原地或滑行起步，向前绕整个冰场一圈，用时不超过 35 秒，蹬冰均衡。手臂自由；两个方向都练。",
+        "req_zh": "用时不超过 35 秒完成。"
+      }
+    ],
+    "agility": [
+      {
+        "en": "Forward C step",
+        "zh": "向前 C 字步",
+        "vid": "XAFhux5SJn0",
+        "tip": "A curved 'C'-shaped step that changes direction smoothly.",
+        "desc_en": "From a standstill or two-foot glide, step onto a forward inside edge, extend the free foot then draw it in to a T or L by the skating foot. Turn the free toe out and rotate the upper body to face where you came from, then step backward onto a backward inside edge. Both steps on one curve form a 'C'.",
+        "req_en": "Perform on each foot, with a 1-second glide before and after the step.",
+        "desc_zh": "从静止或双脚滑行，踏上向前内刃，浮足伸出再收到支撑脚旁成 T 或 L。把浮足脚尖外旋、上身转向来路方向，再向后踏到向后内刃。两步在同一条弧上画出一个'C'。",
+        "req_zh": "两只脚都做，步前步后各保持 1 秒滑行。"
+      },
+      {
+        "en": "Backward C step",
+        "zh": "向后 C 字步",
+        "vid": "Dxh53MwlrFU",
+        "tip": "The backward version of the C step.",
+        "desc_en": "From a standstill or two-foot glide, step onto a backward inside edge. Turn the free toe out and rotate the upper body to face your direction of travel, then step forward onto a forward inside edge. Both steps on one curve form a 'C'.",
+        "req_en": "Perform on each foot, with a 1-second glide before and after the step.",
+        "desc_zh": "从静止或双脚滑行，踏上向后内刃。把浮足脚尖外旋、上身转向前进方向，再向前踏到向前内刃。两步在同一条弧上画出一个'C'。",
+        "req_zh": "两只脚都做，步前步后各保持 1 秒滑行。"
+      },
+      {
+        "en": "Two-foot multi turns",
+        "zh": "双脚连续转身",
+        "vid": "GiJexVs9JSA",
+        "tip": "Several linked turns in a row on two feet.",
+        "desc_en": "From forward or backward skating, glide on two feet (line or curve), bend the knees and do a series of two-foot turns (like three-turns/brackets) with a 'down/up/down/up' rhythm, feet parallel, body facing one direction throughout. Both directions; occasional pushes okay.",
+        "req_en": "At least 6 turns in a row in your chosen direction.",
+        "desc_zh": "从向前或向后滑行，双脚滑（直线或弧线），屈膝做一连串双脚转（类似转三/括弧转），节奏'下/上/下/上'，双脚平行，全程身体朝一个方向。两个方向都练；偶尔蹬一下保持流畅可以。",
+        "req_zh": "向自选方向连续做至少 6 个转。"
+      },
+      {
+        "en": "Rotating power jump",
+        "zh": "旋转力量跳",
+        "vid": "9sj_xL3EQoY",
+        "tip": "A powerful jump with rotation in the air.",
+        "desc_en": "From a standstill, push onto a forward outside edge. Use arms and free leg to move forward while pressing the skating leg to launch up. Rotate 180° and land on a backward outside edge of the other foot. Both directions; train your preferred one.",
+        "req_en": "One jump with at least a 1-second entry and exit edge.",
+        "desc_zh": "从静止踏上向前外刃。用手臂和浮腿带动向前，同时压支撑腿蹬起。空中转 180°，落到另一只脚的向后外刃上。两个方向都练；主练自选方向。",
+        "req_zh": "完成一次跳，进入和落出刃各至少保持 1 秒。"
+      },
+      {
+        "en": "Backward toe-assisted jump",
+        "zh": "向后用刀齿辅助跳",
+        "vid": "_vTCwfJePR4",
+        "tip": "A backward jump that uses the toe pick to launch.",
+        "desc_en": "From backward skating, glide on one foot (line or curve). Extend the free leg back and plant the toe pick firmly to act as a lever; pull back onto the toe and push off to jump straight up with no rotation, landing on the same or other foot. Choose your take-off and landing foot.",
+        "req_en": "One jump with at least a 1-second exit edge.",
+        "desc_zh": "向后滑行，单脚滑（直线或弧线）。浮腿向后伸、把刀齿牢牢扎进冰面当支点；向后压到刀齿上蹬起，垂直跳无旋转，落到同脚或另一只脚。起跳脚和落脚自选。",
+        "req_zh": "完成一次跳，落出刃至少保持 1 秒。"
+      },
+      {
+        "en": "Backward 360 two-foot jump",
+        "zh": "向后 360° 双脚跳",
+        "vid": "evSvUW1ZboE",
+        "tip": "A full-rotation jump travelling backward, two-foot landing.",
+        "desc_en": "From backward skating, glide on two feet, bend the knees and pre-rotate the upper body opposite the spin. Jump using arms, hips and knees to rotate 360° in the air, landing backward on two feet. Choose your direction.",
+        "req_en": "One jump with at least ¾ rotation in the air, your chosen direction.",
+        "desc_zh": "向后滑行，双脚滑，屈膝并把上身向旋转相反方向预转。用手臂、髋和屈膝蹬起，空中转 360°，向后双脚落地。方向自选。",
+        "req_zh": "向自选方向完成一次跳，空中至少完成 ¾ 圈旋转。"
+      },
+      {
+        "en": "Forward one-foot spin with spiraling edge",
+        "zh": "向前单脚旋转带螺旋线进入",
+        "vid": "XNXNl622K4Q",
+        "tip": "A one-foot spin entered on a spiraling curve.",
+        "desc_en": "Start on a forward outside edge and press to tighten the curve (spiralling) into a three-turn. Spin on the resulting back inside edge while rising, arms and free foot extending then drawing in to speed up. Exit by stepping back onto an outside edge into a landing position.",
+        "req_en": "At least 2 revolutions.",
+        "desc_zh": "从向前外刃开始，加压让弧线越收越紧（螺旋线）接一个转三。在转出的向后内刃上一边起身一边旋转，手臂和浮足先伸开再收拢加速。结束时向后踏到外刃成落地姿势。",
+        "req_zh": "至少转 2 圈。"
+      },
+      {
+        "en": "Forward two-foot reverse pivot turn",
+        "zh": "向前双脚反向轴心转",
+        "vid": "w5FwJWyhZ1M",
+        "tip": "A pivot that reverses direction on two feet.",
+        "desc_en": "Through a staggered pylon course (~3 m wide), skate forward and glide on two feet with bent knees. Keeping the body facing the way you're going, quickly flip/pivot the feet onto a backward glide travelling the opposite way (like a bracket). After a short glide, exit backward, then step forward to repeat the other way.",
+        "req_en": "Perform one turn in each direction.",
+        "desc_zh": "在约 3 米宽的交错桩道里，向前滑并双脚屈膝滑行。身体保持朝前进方向，把双脚快速翻转/轴转到向后滑、朝相反方向走（类似括弧转）。短暂滑行后向后滑出，再向前踏出朝另一边重复。",
+        "req_zh": "两个方向各做一次。"
+      }
+    ]
+  }
+};
+let LANG = 'en';
+
+const UI = {
+  en: {
+    heroEyebrow:'Every move — seen and understood',
+    heroTitle:'An <em>interactive CanSkate</em> handbook',
+    heroLead:'Just signed up, or just starting out? Walking into the rink with a dense progress card full of technical English can feel impossible to enter. Skate Canada’s system is thorough — but it’s spread across a hundred PDFs, scattered YouTube demos, and dense terminology. This brings it together: every CanSkate skill, Stages 1–6, on one page.',
+    heroSub:'Tap any move to read the official description in English & Mandarin, what counts as a pass, and jump straight to its Skate Canada demo video. Reviewing what you’ve learned, or previewing the stages above you — both made easier.',
+    searchPlaceholder:'Search a skill… e.g. spiral, crosscut, stop',
+    stageWord:'Stage',
+    balance:'Balance', control:'Control', agility:'Agility',
+    descLabel:'What it is', reqLabel:'What counts as a pass',
+    zhTag:'中文', enTag:'English',
+    watch:'Watch the official video', watchNoVid:'Browse the official video library',
+    noVidNote:'There’s no official demo for this skill in the library yet — this opens the full Skate Canada library instead.',
+    prev:'← Previous skill', next:'Next skill →',
+    secEmpty:'No matches here',
+    infoText:'Move descriptions and pass requirements are summarized from Skate Canada’s official CanSkate Elements Descriptions &amp; Requirements; Mandarin is a translation for learners. Videos are hosted by Skate Canada on YouTube. This is an independent study tool, not affiliated with or endorsed by Skate Canada.',
+    footer:'Canskate Visualizer · Independent study tool · Not affiliated with Skate Canada · Descriptions &amp; videos © Skate Canada',
+    countAll:n=>`Showing all ${n} skills`,
+    countFiltered:(m,n)=>`${m} of ${n} skills match`,
+    noResults:q=>`No skills match “${q}”.`,
+    clearSearch:'Clear search'
+  },
+  zh: {
+    heroEyebrow:'每一个动作 · 看得见 · 看得懂',
+    heroTitle:'可交互的 <em>CanSkate</em> 进度手册',
+    heroLead:'刚报名、或是刚开始学滑冰？面对一堆英文术语和密密麻麻的考级表，不知从哪里入手。Skate Canada 的体系其实非常完整，但它太“完整”了——上百份 PDF、零散的 YouTube playlist、大段英文术语，全靠自己 cross-reference。这里把 CanSkate 1–6 阶段的全部动作整理在一页。',
+    heroSub:'点任意一个动作，就能看到中英双语的官方说明、过关标准，并直达 Skate Canada 的官方示范视频。复习已经学过的，或者提前预习更高阶段——都更直观。',
+    searchPlaceholder:'搜索动作… 例如 spiral、交叉步、停止',
+    stageWord:'阶段',
+    balance:'平衡', control:'控制', agility:'灵活性',
+    descLabel:'这是什么动作', reqLabel:'怎样算过关',
+    zhTag:'中文', enTag:'English',
+    watch:'观看官方视频', watchNoVid:'浏览官方视频库',
+    noVidNote:'这个动作官方视频库里还没有示范——这里会打开 Skate Canada 的完整视频库。',
+    prev:'← 上一个', next:'下一个 →',
+    secEmpty:'这里没有匹配',
+    infoText:'动作说明和过关标准根据 Skate Canada 官方《CanSkate Elements Descriptions &amp; Requirements》概括而成；中文为学习用翻译。视频由 Skate Canada 托管在 YouTube 。这是一个独立学习工具，与 Skate Canada 无关联也未获背书。',
+    footer:'Canskate Visualizer · 独立学习工具 · 与 Skate Canada 无官方关联 · 说明与视频版权归 Skate Canada',
+    countAll:n=>`共 ${n} 个动作`,
+    countFiltered:(m,n)=>`${n} 个中有 ${m} 个匹配`,
+    noResults:q=>`没有动作匹配“${q}”。`,
+    clearSearch:'清除搜索'
+  }
+};
+
+const PLAYLIST_URL = 'https://www.youtube.com/playlist?list=PLvE0VdQZtzvdH9q3Ccv2f2KBoHBTR4POI';
+const STAGE_ORDER = ['1','2','3','4','5','6'];
+const RIBBONS = ['balance','control','agility'];
+
+let FLAT = [];
+function buildFlat(){
+  FLAT = [];
+  STAGE_ORDER.forEach(s=>{
+    RIBBONS.forEach(rib=>(SKILLS[s][rib]||[]).forEach(sk=>FLAT.push({...sk, stage:s, ribbon:rib})));
+  });
+  FLAT.forEach((f,i)=>f.idx=i);
+}
+
+function setLang(lang){
+  LANG = lang;
+  document.getElementById('root').lang = lang==='zh'?'zh-Hans':'en';
+  document.getElementById('lang-en').classList.toggle('active',lang==='en');
+  document.getElementById('lang-zh').classList.toggle('active',lang==='zh');
+  document.getElementById('lang-en').setAttribute('aria-pressed',lang==='en');
+  document.getElementById('lang-zh').setAttribute('aria-pressed',lang==='zh');
+  render(); onSearch();
+  if(currentIdx>=0 && document.getElementById('panel').classList.contains('open')) fillPanel(currentIdx);
+}
+
+function render(){
+  const t = UI[LANG];
+  document.getElementById('hero-title').innerHTML = t.heroTitle;
+  document.getElementById('hero-lead').textContent = t.heroLead;
+  document.getElementById('hero-sub').textContent = t.heroSub;
+  document.getElementById('info-text').innerHTML = t.infoText;
+  document.getElementById('footer-text').innerHTML = t.footer;
+
+  document.getElementById('stage-nav').innerHTML = STAGE_ORDER.map(s=>{
+    const label = LANG==='zh'?SKILLS[s].label_zh:SKILLS[s].label_en;
+    return `<button type="button" class="stage-chip" onclick="jumpTo('stage-${s}')">${label}</button>`;
+  }).join('');
+
+  document.getElementById('stages').innerHTML = STAGE_ORDER.map(renderStage).join('');
+}
+
+function countVids(s){
+  let v=0,n=0; RIBBONS.forEach(r=>(SKILLS[s][r]||[]).forEach(sk=>{n++; if(sk.vid)v++;}));
+  return {v,n};
+}
+
+function renderStage(s){
+  const t = UI[LANG];
+  const numLabel = LANG==='zh' ? SKILLS[s].label_zh : (t.stageWord+' '+s);
+  const {v,n}=countVids(s);
+  let sections='', tabs='';
+  RIBBONS.forEach((rib,i)=>{
+    const rows=(SKILLS[s][rib]||[]).map(sk=>skillRow(sk,rib,s)).join('');
+    const active = i===0;
+    const cv=(SKILLS[s][rib]||[]).filter(sk=>sk.vid).length, cn=(SKILLS[s][rib]||[]).length;
+    tabs+=`<button type="button" role="tab" id="tab-${s}-${rib}" class="sec-tab ${rib}${active?' active':''}"
+      aria-selected="${active}" aria-controls="panel-${s}-${rib}" tabindex="${active?0:-1}"
+      onclick="selectTab('${s}','${rib}')">
+      <span class="sec-dot ${rib}" aria-hidden="true"></span><span class="tab-label">${t[rib]}</span></button>`;
+    sections+=`<div class="section" data-col="${rib}" id="panel-${s}-${rib}" role="tabpanel"
+      aria-labelledby="tab-${s}-${rib}"${active?'':' data-mtab-hidden'}>
+      <div class="sec-head ${rib}"><span class="sec-dot ${rib}" aria-hidden="true"></span>${t[rib]}</div>
+      <ul class="skill-list">${rows}</ul>
+      <p class="sec-empty" hidden>${t.secEmpty}</p>
+    </div>`;
+  });
+  return `<section class="stage" id="stage-${s}" aria-label="${LANG==='zh'?numLabel:(t.stageWord+' '+s)}">
+    <div class="stage-title">
+      <span class="st-word">${t.stageWord}</span>
+      <span class="st-num">${s}</span>
+      <span class="st-count">${n} ${LANG==='zh'?'个动作':(n===1?'move':'moves')}</span>
+    </div>
+    <div class="stage-block">
+      <div class="stage-main">
+        <div class="sec-tabs" role="tablist" aria-label="${t.stageWord} ${s}" onkeydown="tabKeydown(event,'${s}')">${tabs}</div>
+        <div class="stage-body">${sections}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function skillRow(sk, ribbon, stage){
+  const name = LANG==='zh'?sk.zh:sk.en;
+  const sub  = LANG==='zh'?sk.en:sk.zh;
+  const hasVid = !!sk.vid;
+  const fi = FLAT.find(f=>f.stage===stage && f.ribbon===ribbon && f.en===sk.en);
+  const idx = fi?fi.idx:-1;
+  const playIcon = hasVid
+    ? `<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 2l7 4-7 4V2z" fill="var(--accent)"/></svg>`
+    : `<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.5" stroke="#94a3b8" stroke-width="1.2"/><path d="M6 4v2.5M6 8h.01" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  const hay = (sk.en+' '+sk.zh+' '+(sk.desc_en||'')+' '+(sk.desc_zh||'')).toLowerCase().replace(/"/g,'&quot;');
+  return `<li><button type="button" class="skill-row" data-flat="${idx}" data-hay="${hay}" onclick="openPanel(${idx})">
+    <span class="play-dot ${hasVid?'':'no-vid'}">${playIcon}</span>
+    <span class="skill-text"><span class="skill-en">${esc(name)}</span><span class="skill-zh">${esc(sub)}</span></span>
+  </button></li>`;
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+/* Search (search bar removed; function kept so legacy calls are no-ops and rows stay visible) */
+function onSearch(){
+  document.querySelectorAll('.skill-row').forEach(r=>{ r.hidden = false; r.querySelector('.skill-en').innerHTML = esc(r.querySelector('.skill-en').textContent); const zh = r.querySelector('.skill-zh'); if(zh) zh.innerHTML = esc(zh.textContent); });
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('hidden'));
+  document.querySelectorAll('.sec-empty').forEach(e=>e.hidden=true);
+  document.querySelectorAll('.sec-tab').forEach(t=>t.classList.remove('tab-nomatch'));
+  const nr=document.getElementById('no-results'); if(nr) nr.classList.remove('show');
+}
+function hl(text){return esc(text);}
+function clearSearch(){}
+
+/* Panel */
+let lastFocused=null, currentIdx=-1;
+function openPanel(idx){
+  if(idx<0) return;
+  lastFocused=document.activeElement;
+  fillPanel(idx);
+  document.getElementById('panel').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('panel-close').focus();
+}
+function fillPanel(idx){
+  currentIdx=idx;
+  const sk=FLAT[idx], t=UI[LANG];
+  const tag=document.getElementById('panel-tag');
+  tag.className='panel-tag '+sk.ribbon;
+  const stageLabel = LANG==='zh'?SKILLS[sk.stage].label_zh:(t.stageWord+' '+sk.stage);
+  tag.textContent = `${stageLabel} · ${t[sk.ribbon]}`;
+  document.getElementById('panel-title').textContent = LANG==='zh'?sk.zh:sk.en;
+  document.getElementById('panel-subtitle').textContent = LANG==='zh'?sk.en:sk.zh;
+
+  const primaryDesc = LANG==='zh'?sk.desc_zh:sk.desc_en;
+  const primaryReq  = LANG==='zh'?sk.req_zh:sk.req_en;
+  const otherDesc   = LANG==='zh'?sk.desc_en:sk.desc_zh;
+  const otherReq    = LANG==='zh'?sk.req_en:sk.req_zh;
+  const otherTag    = LANG==='zh'?t.enTag:t.zhTag;
+
+  let watch;
+  if(sk.vid){
+    watch = `<a class="watch-btn" href="https://www.youtube.com/watch?v=${sk.vid}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.7 2.7 0 0 0-1.9-1.9C18 4.8 12 4.8 12 4.8s-6 0-7.7.5A2.7 2.7 0 0 0 2.4 7.2 28 28 0 0 0 1.9 12a28 28 0 0 0 .5 4.8 2.7 2.7 0 0 0 1.9 1.9c1.7.5 7.7.5 7.7.5s6 0 7.7-.5a2.7 2.7 0 0 0 1.9-1.9 28 28 0 0 0 .5-4.8 28 28 0 0 0-.5-4.8zM10 15V9l5 3z"/></svg>
+      ${t.watch}</a>`;
+  } else {
+    watch = `<p class="no-vid-note">${t.noVidNote}</p>
+      <a class="watch-btn secondary" href="${PLAYLIST_URL}" target="_blank" rel="noopener">${t.watchNoVid} ↗</a>`;
+  }
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="detail-block">
+      <div class="detail-label">${t.descLabel}</div>
+      <p class="detail-text">${esc(primaryDesc)}</p>
+    </div>
+    <div class="detail-block">
+      <div class="detail-label">${t.reqLabel}</div>
+      <div class="detail-req"><p class="detail-text">${esc(primaryReq)}</p></div>
+    </div>
+    ${watch}
+    <div class="detail-divider"></div>
+    <span class="detail-lang-tag">${otherTag}</span>
+    <div class="detail-block">
+      <div class="detail-label">${t.descLabel}</div>
+      <p class="detail-text">${esc(otherDesc)}</p>
+    </div>
+    <div class="detail-block" style="margin-bottom:4px;">
+      <div class="detail-label">${t.reqLabel}</div>
+      <div class="detail-req"><p class="detail-text">${esc(otherReq)}</p></div>
+    </div>
+    <div class="panel-nav">
+      <button type="button" onclick="navPanel(-1)" ${idx<=0?'disabled':''}>${t.prev}</button>
+      <button type="button" onclick="navPanel(1)" ${idx>=FLAT.length-1?'disabled':''}>${t.next}</button>
+    </div>`;
+  document.querySelector('.panel').scrollTop=0;
+}
+function navPanel(d){const i=currentIdx+d; if(i<0||i>=FLAT.length) return; fillPanel(i); document.getElementById('panel-close').focus();}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.body.style.overflow='';
+  if(lastFocused) lastFocused.focus();
+}
+function jumpTo(id){const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+/* Mobile section tabs (WAI-ARIA tab pattern) */
+function selectTab(stage, rib){
+  RIBBONS.forEach(r=>{
+    const tab=document.getElementById(`tab-${stage}-${r}`);
+    const panel=document.getElementById(`panel-${stage}-${r}`);
+    const on = r===rib;
+    tab.classList.toggle('active', on);
+    tab.setAttribute('aria-selected', on);
+    tab.tabIndex = on?0:-1;
+    if(on) panel.removeAttribute('data-mtab-hidden'); else panel.setAttribute('data-mtab-hidden','');
+  });
+}
+function tabKeydown(e, stage){
+  const keys=['ArrowLeft','ArrowRight','Home','End'];
+  if(!keys.includes(e.key)) return;
+  e.preventDefault();
+  const cur = RIBBONS.findIndex(r=>document.getElementById(`tab-${stage}-${r}`).getAttribute('aria-selected')==='true');
+  let next = cur;
+  if(e.key==='ArrowLeft') next=(cur-1+RIBBONS.length)%RIBBONS.length;
+  else if(e.key==='ArrowRight') next=(cur+1)%RIBBONS.length;
+  else if(e.key==='Home') next=0;
+  else if(e.key==='End') next=RIBBONS.length-1;
+  selectTab(stage, RIBBONS[next]);
+  document.getElementById(`tab-${stage}-${RIBBONS[next]}`).focus();
+}
+
+document.addEventListener('keydown', e=>{
+  const open = document.getElementById('panel').classList.contains('open');
+  if(!open) return;
+  if(e.key==='Escape'){ closePanel(); return; }
+  if(e.key==='ArrowRight'){ navPanel(1); return; }
+  if(e.key==='ArrowLeft'){ navPanel(-1); return; }
+  if(e.key==='Tab'){
+    const f = document.querySelector('.panel').querySelectorAll('button:not([disabled]), a[href]');
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+buildFlat();
+render();
+onSearch();
+</script>
+
+</body></html>
